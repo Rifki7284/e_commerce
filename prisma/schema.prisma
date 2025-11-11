@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  name      String?
+  password  String
+  role      Role       @default(Client)
+  createdAt DateTime   @default(now())
+  cartItems CartItem[]
+  accounts  Account[]
+  sessions  Session[]
+}
+
+enum Role {
+  Admin
+  Client
+}
+
+model Product {
+  id          Int            @id @default(autoincrement())
+  name        String
+  price       Float
+  description String
+  stock       Int
+  images      ProductImage[]
+  cartItems   CartItem[]
+  categoryId  Int
+  categories  Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String
+  iconName  String
+  product   Product[]
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int      @default(1)
+  userId    Int
+  productId Int
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
