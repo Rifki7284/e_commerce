@@ -69,53 +69,68 @@ export async function POST(req: Request) {
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
     const stock = parseInt(formData.get("stock") as string, 10);
-    const file = formData.get("file") as File | null;
     const categoryIdRaw = formData.get("categoryId");
+
     if (!categoryIdRaw) {
-      return NextResponse.json({ error: "Category ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Category ID is required" },
+        { status: 400 }
+      );
     }
 
     const categoryId = Number(categoryIdRaw);
-
     if (isNaN(categoryId)) {
-      return NextResponse.json({ error: "Invalid Category ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid Category ID" },
+        { status: 400 }
+      );
     }
-    let imageUrl = "";
 
-    if (file) {
-      // Simpan file di folder public/uploads
+    // ✅ Ambil semua file (karena dikirim sebagai "files[]")
+    const files = formData.getAll("files[]") as File[];
+
+    const imageUrls: string[] = [];
+
+    // Buat folder upload jika belum ada
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    // ✅ Simpan semua file satu per satu
+    for (const file of files) {
+      if (!(file instanceof File)) continue;
+
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
       const fileName = `${Date.now()}-${file.name}`;
       const filePath = path.join(uploadDir, fileName);
-      await writeFile(filePath, buffer);
 
-      imageUrl = `/uploads/${fileName}`; // URL yang bisa dipakai di <img src="...">
+      await writeFile(filePath, buffer);
+      imageUrls.push(`/uploads/${fileName}`);
     }
 
+    // ✅ Simpan ke database dengan relasi ke images
     const product = await prisma.product.create({
       data: {
         name,
         price,
         description,
-        categoryId,
         stock,
+        categoryId,
         images: {
-          create: imageUrl ? [{ url: imageUrl }] : [],
+          create: imageUrls.map((url) => ({ url })),
         },
       },
       include: { images: true },
     });
 
     return NextResponse.json(product);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating product:", error);
-    return NextResponse.json({ error: error }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create product" },
+      { status: 500 }
+    );
   }
 }

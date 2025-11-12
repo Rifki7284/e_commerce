@@ -28,6 +28,7 @@ export default function AdminPage() {
   const [totalPage, setTotalPage] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [loading, setLoading] = useState<boolean>(true)
+
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPage) {
       setCurrentPage(page)
@@ -144,7 +145,7 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
-        <ProductTable products={products ?? []} page={currentPage} onDelete={handleDeleteProduct} loading={loading} />
+        <ProductTable getProduct={getProduct} products={products ?? []} page={currentPage} onDelete={handleDeleteProduct} loading={loading} />
         <Pagination>
           <PaginationContent>
             <PaginationItem>

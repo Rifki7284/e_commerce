@@ -137,7 +137,7 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
-        <CategoryTable category={category ?? []} page={currentPage} onDelete={handleDeleteProduct} loading={loading} />
+        <CategoryTable getCategory={getCategory} category={category ?? []} page={currentPage} onDelete={handleDeleteProduct} loading={loading} />
         <Pagination>
           <PaginationContent>
             <PaginationItem>

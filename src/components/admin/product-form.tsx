@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { X, Upload, Sparkles, Loader2, AlertTriangle, Tag } from "lucide-react"
+import { X, Upload, Sparkles, Loader2, AlertTriangle } from "lucide-react"
 
 interface Category {
   id: number
@@ -30,8 +30,8 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
     description: "",
     stock: "",
     categoryId: "",
-    imageFile: null as File | null,
-    imageUrl: "",
+    imageFiles: [] as File[],
+    imageUrls: [] as string[],
   })
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
@@ -49,20 +49,18 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
   const fetchCategories = async () => {
     setLoadingCategories(true)
     try {
-      const res = await fetch('/api/category?page=1&perPage=100')
+      const res = await fetch("/api/category?page=1&perPage=100")
       const data = await res.json()
       setCategories(data.category || [])
     } catch (error) {
-      console.error('Failed to fetch categories:', error)
-      setErrorMessage('Failed to load categories')
+      console.error("Failed to fetch categories:", error)
+      setErrorMessage("Failed to load categories")
     } finally {
       setLoadingCategories(false)
     }
   }
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
@@ -78,11 +76,13 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null
-    if (file) {
-      const url = URL.createObjectURL(file)
-      setFormData((prev) => ({ ...prev, imageFile: file, imageUrl: url }))
-    }
+    const files = Array.from(e.target.files ?? [])
+    if (files.length === 0) return
+
+    const newFiles = [...formData.imageFiles, ...files].slice(0, 4) // Max 4
+    const newUrls = newFiles.map((file) => URL.createObjectURL(file))
+
+    setFormData((prev) => ({ ...prev, imageFiles: newFiles, imageUrls: newUrls }))
   }
 
   const handleDrag = (e: React.DragEvent) => {
@@ -100,11 +100,19 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
     e.stopPropagation()
     setDragActive(false)
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0]
-      const url = URL.createObjectURL(file)
-      setFormData((prev) => ({ ...prev, imageFile: file, imageUrl: url }))
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const files = Array.from(e.dataTransfer.files)
+      const newFiles = [...formData.imageFiles, ...files].slice(0, 4)
+      const newUrls = newFiles.map((file) => URL.createObjectURL(file))
+
+      setFormData((prev) => ({ ...prev, imageFiles: newFiles, imageUrls: newUrls }))
     }
+  }
+
+  const removeImage = (index: number) => {
+    const newFiles = formData.imageFiles.filter((_, i) => i !== index)
+    const newUrls = formData.imageUrls.filter((_, i) => i !== index)
+    setFormData((prev) => ({ ...prev, imageFiles: newFiles, imageUrls: newUrls }))
   }
 
   const handleClose = () => {
@@ -114,8 +122,8 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
       description: "",
       stock: "",
       categoryId: "",
-      imageFile: null,
-      imageUrl: "",
+      imageFiles: [],
+      imageUrls: [],
     })
     setErrorMessage(null)
     onClose()
@@ -139,7 +147,11 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
       form.append("description", formData.description)
       form.append("stock", formData.stock)
       form.append("categoryId", formData.categoryId)
-      if (formData.imageFile) form.append("file", formData.imageFile)
+
+      // Append multiple images
+      formData.imageFiles.forEach((file) => {
+        form.append("files[]", file)
+      })
 
       const res = await fetch("/api/products", {
         method: "POST",
@@ -313,12 +325,11 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
               />
             </div>
 
-            {/* Image Upload with Drag & Drop */}
+            {/* Image Upload */}
             <div className="space-y-2">
               <Label className="text-sm font-semibold text-foreground">
-                Product Image
+                Product Images
               </Label>
-
               <div
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -326,45 +337,66 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
                 onDrop={handleDrop}
                 className={`relative border-2 border-dashed rounded-xl p-8 transition-all ${
                   dragActive
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
-                    : 'border-border hover:border-muted-foreground bg-muted/30'
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                    : "border-border hover:border-muted-foreground bg-muted/30"
                 }`}
               >
-                {!formData.imageUrl ? (
+                {formData.imageUrls.length === 0 ? (
                   <div className="text-center">
                     <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
                       <Upload className="w-6 h-6 text-muted-foreground" />
                     </div>
                     <p className="text-sm text-foreground mb-1">
-                      <span className="font-semibold text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">
+                        Click to upload
+                      </span>{" "}
+                      or drag and drop
                     </p>
-                    <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB (max 4 images)</p>
                     <Input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleFileChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
                   </div>
                 ) : (
-                  <div className="relative group">
-                    <img
-                      src={formData.imageUrl}
-                      alt="preview"
-                      className="w-full h-48 object-cover rounded-lg ring-1 ring-border"
-                    />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setFormData((prev) => ({ ...prev, imageFile: null, imageUrl: "" }))}
-                        className="shadow-lg"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Remove Image
-                      </Button>
-                    </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {formData.imageUrls.map((url, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={url}
+                          alt={`preview-${index}`}
+                          className="w-full h-32 object-cover rounded-lg ring-1 ring-border"
+                        />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => removeImage(index)}
+                            className="shadow-lg"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {formData.imageUrls.length < 4 && (
+                      <div className="relative border-2 border-dashed rounded-lg flex items-center justify-center h-32 hover:border-blue-500 transition">
+                        <Upload className="w-6 h-6 text-muted-foreground" />
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleFileChange}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

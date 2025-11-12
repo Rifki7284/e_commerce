@@ -3,6 +3,8 @@
 import { MoreVertical, Edit2, Trash2, Package } from 'lucide-react'
 import { useState } from 'react'
 import { Spinner } from '../ui/spinner'
+import CategoryFormEditModal from './category-form-edit'
+import { number } from 'zod'
 
 interface Category {
     id: number
@@ -16,11 +18,31 @@ interface CategoryTableProps {
     onDelete: (id: string) => void
     loading: boolean
     page: number
+    getCategory: () => void
+}
+interface EditProps {
+    id: string
+    isOpen: boolean
+    data: Category
 }
 
-export default function CategoryTable({ category, onDelete, loading, page }: CategoryTableProps) {
+export default function CategoryTable({ category, onDelete, loading, page, getCategory }: CategoryTableProps) {
     const [activeMenu, setActiveMenu] = useState<number | null>(null)
-
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [id, setId] = useState<string>("")
+    const [data, setData] = useState<Category>()
+    const handleEdit = ({ id, isOpen, data }: EditProps) => {
+        setId(id)
+        setIsModalOpen(isOpen)
+        // pastikan data dikonversi ke categoryFormData
+        const convertedData: Category = {
+            name: data.name,
+            iconName: data.iconName,
+            id: Number(id),
+            slug: ''
+        }
+        setData(convertedData)
+    }
     return (
         <>
             {/* Desktop Table View */}
@@ -86,6 +108,9 @@ export default function CategoryTable({ category, onDelete, loading, page }: Cat
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-end gap-2">
                                             <button
+                                                onClick={() => {
+                                                    handleEdit({ id: category.id.toString(), isOpen: true, data: category })
+                                                }}
                                                 className="inline-flex items-center gap-1.5 rounded-lg bg-blue-100 dark:bg-blue-950/50 px-3 py-2 text-sm font-medium text-blue-700 dark:text-blue-400 transition-all hover:bg-blue-200 dark:hover:bg-blue-950 active:scale-95"
                                             >
                                                 <Edit2 className="h-3.5 w-3.5" />
@@ -138,21 +163,21 @@ export default function CategoryTable({ category, onDelete, loading, page }: Cat
                         <Spinner className="size-8 text-primary mx-auto" />
                     </div>
                 )}
-                {!loading && category.map((product) => (
+                {!loading && category.map((category) => (
                     <div
-                        key={product.id}
+                        key={category.id}
                         className="bg-card rounded-xl border border-border shadow-sm overflow-hidden"
                     >
                         <div className="p-4">
                             {/* Header */}
                             <div className="flex items-start gap-3 mb-3">
                                 <div className="p-2 bg-muted rounded-lg">
-                                    <span className="text-2xl">{product.iconName}</span>
+                                    <span className="text-2xl">{category.iconName}</span>
                                 </div>
 
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-semibold text-foreground text-base mb-1">
-                                        {product.name}
+                                        {category.name}
                                     </h3>
                                     <span className="inline-flex items-center rounded-full bg-green-100 dark:bg-green-950/50 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">
                                         Active
@@ -161,26 +186,28 @@ export default function CategoryTable({ category, onDelete, loading, page }: Cat
 
                                 <div className="relative">
                                     <button
-                                        onClick={() => setActiveMenu(activeMenu === product.id ? null : product.id)}
+                                        onClick={() => setActiveMenu(activeMenu === category.id ? null : category.id)}
                                         className="p-2 rounded-lg hover:bg-muted transition-colors"
                                     >
                                         <MoreVertical className="h-5 w-5 text-muted-foreground" />
                                     </button>
 
-                                    {activeMenu === product.id && (
+                                    {activeMenu === category.id && (
                                         <>
                                             <div
                                                 className="fixed inset-0 z-10"
                                                 onClick={() => setActiveMenu(null)}
                                             />
                                             <div className="absolute right-0 top-full mt-1 w-40 bg-popover rounded-lg shadow-lg border border-border py-1 z-20">
-                                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                                                <button onClick={() => {
+                                                    handleEdit({ id: category.id.toString(), isOpen: true, data: category })
+                                                }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
                                                     <Edit2 className="h-4 w-4" />
                                                     Edit
                                                 </button>
                                                 <button
                                                     onClick={() => {
-                                                        onDelete(product.id.toString())
+                                                        onDelete(category.id.toString())
                                                         setActiveMenu(null)
                                                     }}
                                                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
@@ -200,7 +227,7 @@ export default function CategoryTable({ category, onDelete, loading, page }: Cat
                                     Slug:
                                 </span>
                                 <span className="text-xs text-foreground font-mono bg-muted px-2 py-1 rounded">
-                                    {product.slug}
+                                    {category.slug}
                                 </span>
                             </div>
                         </div>
@@ -219,6 +246,13 @@ export default function CategoryTable({ category, onDelete, loading, page }: Cat
                     </div>
                 )}
             </div>
+            <CategoryFormEditModal
+                id={id ?? ""}
+                data={data!}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSuccess={getCategory}
+            />
         </>
     )
 }

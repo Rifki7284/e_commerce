@@ -3,12 +3,17 @@
 import { MoreVertical, Edit2, Trash2, Package } from 'lucide-react'
 import { useState } from 'react'
 import { Spinner } from '../ui/spinner'
+import ProductFormEditModal from './product-form-edit'
 
 interface Category {
   id: number
   name: string
   slug: string
   iconName: string
+}
+
+interface ProductImage {
+  url: string
 }
 
 interface Product {
@@ -21,26 +26,56 @@ interface Product {
   images: ProductImage[]
 }
 
-interface ProductImage {
-  url: string
+interface ProductFormData {
+  name: string
+  price: string
+  description: string
+  stock: string
+  category: string
+  imageFiles: File[]
+  imageUrls: string[]
 }
-
 interface ProductTableProps {
   products: Product[]
   onDelete: (id: string) => void
+  getProduct: () => void
   loading: boolean
   page: number
 }
 
-export default function ProductTable({ products, onDelete, loading, page }: ProductTableProps) {
+interface EditProps {
+  id: string
+  isOpen: boolean
+  data: Product | ProductFormData
+}
+
+export default function ProductTable({ products, onDelete, loading, page, getProduct }: ProductTableProps) {
+  const [id, setId] = useState<string>()
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [data, setData] = useState<ProductFormData | null>(null)
   const [activeMenu, setActiveMenu] = useState<number | null>(null)
-  
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
       minimumFractionDigits: 0
     }).format(price)
+  }
+
+  const handleEdit = ({ id, isOpen, data }: EditProps) => {
+    setId(id)
+    setIsModalOpen(isOpen)
+    // pastikan data dikonversi ke ProductFormData
+    const convertedData: ProductFormData = {
+      name: data.name,
+      price: data.price.toString(),
+      description: data.description,
+      stock: data.stock,
+      category: (data as any).category ?? (data as any).categories?.id?.toString() ?? "",
+      imageFiles: [],
+      imageUrls: (data as any).images?.map((img: any) => img.url) ?? [],
+    }
+    setData(convertedData)
   }
 
   return (
@@ -51,24 +86,12 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
           <table className="w-full">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="w-16 px-4 py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  No
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Product
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Stock
-                </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="w-16 px-4 py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">No</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Product</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Category</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Price</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Stock</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -80,10 +103,7 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
                 </tr>
               )}
               {!loading && products.map((product, idx) => (
-                <tr
-                  key={product.id}
-                  className="transition-colors hover:bg-muted/50"
-                >
+                <tr key={product.id} className="transition-colors hover:bg-muted/50">
                   <td className="px-6 py-4 text-center">
                     <span className="text-sm text-muted-foreground font-medium">
                       {idx + 1 + (page - 1) * 2}
@@ -93,11 +113,7 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
                     <div className="flex items-center gap-4">
                       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted ring-1 ring-border">
                         {product.images?.[0]?.url ? (
-                          <img
-                            src={product.images[0].url}
-                            alt={product.name}
-                            className="h-full w-full object-cover"
-                          />
+                          <img src={product.images[0].url} alt={product.name} className="h-full w-full object-cover" />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center">
                             <Package className="h-6 w-6 text-muted-foreground" />
@@ -105,9 +121,7 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-foreground truncate">
-                          {product.name}
-                        </p>
+                        <p className="font-semibold text-foreground truncate">{product.name}</p>
                         <p className="text-sm text-muted-foreground truncate mt-0.5">
                           {product.description?.substring(0, 50)}...
                         </p>
@@ -118,20 +132,14 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
                     {product.categories ? (
                       <div className="flex items-center gap-2">
                         <span className="text-xl">{product.categories.iconName}</span>
-                        <span className="text-sm text-foreground font-medium">
-                          {product.categories.name}
-                        </span>
+                        <span className="text-sm text-foreground font-medium">{product.categories.name}</span>
                       </div>
                     ) : (
-                      <span className="text-sm text-muted-foreground italic">
-                        No category
-                      </span>
+                      <span className="text-sm text-muted-foreground italic">No category</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-base font-bold text-foreground">
-                      {formatPrice(product.price)}
-                    </span>
+                    <span className="text-base font-bold text-foreground">{formatPrice(product.price)}</span>
                   </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center rounded-full bg-green-100 dark:bg-green-950/50 px-2.5 py-1 text-xs font-medium text-green-700 dark:text-green-400">
@@ -141,6 +149,7 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       <button
+                        onClick={() => handleEdit({ id: product.id.toString(), isOpen: true, data: product })}
                         className="inline-flex items-center gap-1.5 rounded-lg bg-blue-100 dark:bg-blue-950/50 px-3 py-2 text-sm font-medium text-blue-700 dark:text-blue-400 transition-all hover:bg-blue-200 dark:hover:bg-blue-950 active:scale-95"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
@@ -164,12 +173,8 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
         {!loading && products.length === 0 && (
           <div className="text-center py-12">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-foreground mb-1">
-              No products yet
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Get started by adding your first product
-            </p>
+            <h3 className="text-lg font-semibold text-foreground mb-1">No products yet</h3>
+            <p className="text-sm text-muted-foreground">Get started by adding your first product</p>
           </div>
         )}
       </div>
@@ -235,7 +240,7 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
                         onClick={() => setActiveMenu(null)}
                       />
                       <div className="absolute right-0 top-full mt-1 w-40 bg-popover rounded-lg shadow-lg border border-border py-1 z-20">
-                        <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                        <button onClick={() => handleEdit({ id: product.id.toString(), isOpen: true, data: product })} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
                           <Edit2 className="h-4 w-4" />
                           Edit
                         </button>
@@ -285,6 +290,13 @@ export default function ProductTable({ products, onDelete, loading, page }: Prod
           </div>
         )}
       </div>
+      <ProductFormEditModal
+        isOpen={isModalOpen}
+        id={id ?? ""}
+        data={data!}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={getProduct}
+      />
     </>
   )
 }
