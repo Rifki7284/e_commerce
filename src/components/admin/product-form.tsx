@@ -22,10 +22,19 @@ interface ProductFormModalProps {
   onClose: () => void
   onSuccess?: () => void
 }
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
 
 export default function ProductFormModal({ isOpen, onClose, onSuccess }: ProductFormModalProps) {
   const [formData, setFormData] = useState({
     name: "",
+    slug: "",
     price: "",
     description: "",
     stock: "",
@@ -33,6 +42,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
     imageFiles: [] as File[],
     imageUrls: [] as string[],
   })
+
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingCategories, setLoadingCategories] = useState(false)
@@ -62,11 +72,21 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    if (name === "name") {
+      const slug = generateSlug(value)
+      setFormData((prev) => ({
+        ...prev,
+        name: value,
+        slug,
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }))
+    }
   }
+
 
   const handleCategoryChange = (value: string) => {
     setFormData((prev) => ({
@@ -122,6 +142,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
       description: "",
       stock: "",
       categoryId: "",
+      slug: "",
       imageFiles: [],
       imageUrls: [],
     })
@@ -147,6 +168,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
       form.append("description", formData.description)
       form.append("stock", formData.stock)
       form.append("categoryId", formData.categoryId)
+      form.append("slug", formData.slug)
 
       // Append multiple images
       formData.imageFiles.forEach((file) => {
@@ -335,11 +357,10 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
-                className={`relative border-2 border-dashed rounded-xl p-8 transition-all ${
-                  dragActive
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
-                    : "border-border hover:border-muted-foreground bg-muted/30"
-                }`}
+                className={`relative border-2 border-dashed rounded-xl p-8 transition-all ${dragActive
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                  : "border-border hover:border-muted-foreground bg-muted/30"
+                  }`}
               >
                 {formData.imageUrls.length === 0 ? (
                   <div className="text-center">
@@ -405,7 +426,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
         </div>
 
         {/* Fixed Footer */}
-        <DialogFooter className="px-6 py-4 border-t border-border bg-muted/50 sticky bottom-0 z-10 flex-row justify-end gap-2 sm:gap-2">
+        <DialogFooter className="px-6 py-4 border-t border-border bg-muted/50  flex-row justify-end gap-2 sm:gap-2">
           <Button
             type="button"
             variant="outline"

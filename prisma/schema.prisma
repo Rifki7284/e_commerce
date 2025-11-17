@@ -17,6 +17,9 @@ model User {
   cartItems CartItem[]
   accounts  Account[]
   sessions  Session[]
+  reviews   Review[]
+  updatedAt DateTime?  @updatedAt
+  orders    Order[]
 }
 
 enum Role {
@@ -29,11 +32,24 @@ model Product {
   name        String
   price       Float
   description String
+  slug        String
   stock       Int
   images      ProductImage[]
   cartItems   CartItem[]
   categoryId  Int
   categories  Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  reviews     Review[]
+  orderItems  OrderItem[]
+}
+
+model Review {
+  id        Int     @id @default(autoincrement())
+  star      Int
+  review    String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -57,9 +73,8 @@ model CartItem {
   userId    Int
   productId Int
   createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -96,4 +111,27 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  totalAmount   Float
+  status        String      @default("pending")
+  snapToken     String?
+  transactionId String?     @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @updatedAt
+  user          User        @relation(fields: [userId], references: [id])
+  orderItems    OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

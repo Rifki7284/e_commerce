@@ -23,7 +23,7 @@ type CategoryFormData = z.infer<typeof CategorySchema>;
 interface EditCategoryDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess?: () => void; 
+    onSuccess?: () => void;
     id: string
     data?: CategoryFormData | null
 }
@@ -253,7 +253,7 @@ export default function CategoryFormEditModal({
                 </div>
 
                 {/* Fixed Footer */}
-                <DialogFooter className="px-6 py-4 border-t border-border bg-muted/50 sticky bottom-0 z-10 flex-row justify-end gap-2 sm:gap-2">
+                <DialogFooter className="px-6 py-4 border-t border-border bg-muted/50  flex-row justify-end gap-2 sm:gap-2">
                     <Button
                         type="button"
                         variant="outline"

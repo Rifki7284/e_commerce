@@ -4,8 +4,6 @@ import fs from "fs";
 import path from "path";
 import { writeFile } from "fs/promises";
 const prisma = new PrismaClient();
-
-// GET all products
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const count = await prisma.product.count();
@@ -24,6 +22,17 @@ export async function GET(req: NextRequest) {
       include: {
         images: true,
         categories: true,
+        reviews: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
     return NextResponse.json({
@@ -47,6 +56,17 @@ export async function GET(req: NextRequest) {
       include: {
         images: true,
         categories: true,
+        reviews: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
     return NextResponse.json({
@@ -68,6 +88,7 @@ export async function POST(req: Request) {
     const name = formData.get("name") as string;
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
+    const slug = formData.get("slug") as string;
     const stock = parseInt(formData.get("stock") as string, 10);
     const categoryIdRaw = formData.get("categoryId");
 
@@ -117,6 +138,7 @@ export async function POST(req: Request) {
         price,
         description,
         stock,
+        slug,
         categoryId,
         images: {
           create: imageUrls.map((url) => ({ url })),

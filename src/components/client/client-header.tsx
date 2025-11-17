@@ -28,7 +28,7 @@ export default function ClientHeader({ cartCount, onCartOpen, user }: ClientHead
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/client/home" className="text-2xl font-bold text-foreground flex items-center gap-2">
+        <Link href="/home" className="text-2xl font-bold text-foreground flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground">
             E
           </div>
@@ -37,14 +37,14 @@ export default function ClientHeader({ cartCount, onCartOpen, user }: ClientHead
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/client/home" className="text-foreground hover:text-primary transition-colors">
+          <Link href="/home" className="text-foreground hover:text-primary transition-colors">
             Home
           </Link>
-          <Link href="/client/products" className="text-foreground hover:text-primary transition-colors">
+          <Link href="/product" className="text-foreground hover:text-primary transition-colors">
             Products
           </Link>
           <Link
-            href="/client/search"
+            href="/search"
             className="text-foreground hover:text-primary transition-colors flex items-center gap-2"
           >
             <Search size={18} />
@@ -91,13 +91,13 @@ export default function ClientHeader({ cartCount, onCartOpen, user }: ClientHead
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background">
           <div className="container mx-auto px-4 py-4 space-y-4">
-            <Link href="/client/home" className="block text-foreground hover:text-primary transition-colors">
+            <Link href="/home" className="block text-foreground hover:text-primary transition-colors">
               Home
             </Link>
-            <Link href="/client/products" className="block text-foreground hover:text-primary transition-colors">
+            <Link href="/product" className="block text-foreground hover:text-primary transition-colors">
               Products
             </Link>
-            <Link href="/client/search" className="block text-foreground hover:text-primary transition-colors">
+            <Link href="/search" className="block text-foreground hover:text-primary transition-colors">
               Search
             </Link>
             <button

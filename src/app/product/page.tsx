@@ -117,31 +117,7 @@ export default function ProductsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (!storedUser) {
-      router.push("/login")
-      return
-    }
-    setUser(JSON.parse(storedUser))
 
-    const savedCart = localStorage.getItem("cart")
-    if (savedCart) {
-      setCart(JSON.parse(savedCart))
-    }
-
-    const savedWishlist = localStorage.getItem("wishlist")
-    if (savedWishlist) {
-      setWishlist(JSON.parse(savedWishlist))
-    }
-
-    const categoryParam = searchParams.get("category")
-    if (categoryParam) {
-      setSelectedCategory(categoryParam)
-    }
-
-    setIsLoading(false)
-  }, [router, searchParams])
 
   const toggleWishlist = (productId: string) => {
     const updated = wishlist.includes(productId) ? wishlist.filter((id) => id !== productId) : [...wishlist, productId]
@@ -163,29 +139,8 @@ export default function ProductsPage() {
     })
   }
 
-  const removeFromCart = (productId: string) => {
-    setCart((prevCart) => {
-      const updatedCart = prevCart.filter((item) => item.id !== productId)
-      localStorage.setItem("cart", JSON.stringify(updatedCart))
-      return updatedCart
-    })
-  }
 
-  const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productId)
-      return
-    }
-    setCart((prevCart) => {
-      const updatedCart = prevCart.map((item) => (item.id === productId ? { ...item, quantity } : item))
-      localStorage.setItem("cart", JSON.stringify(updatedCart))
-      return updatedCart
-    })
-  }
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
-  }
 
   const filteredProducts = ALL_PRODUCTS.filter((product) => {
     const categoryMatch = selectedCategory === "all" || product.category === selectedCategory
@@ -215,7 +170,7 @@ export default function ProductsPage() {
 
         <div className="flex gap-8">
           {/* Filters Sidebar */}
-          <div className="w-64 flex-shrink-0">
+          <div className="w-64 shrink-0">
             <div className="bg-card border border-border rounded-lg p-6 sticky top-4">
               <h3 className="font-semibold text-foreground mb-4">Filters</h3>
 
@@ -281,7 +236,7 @@ export default function ProductsPage() {
                   >
                     {/* Image Container */}
                     <div className="relative h-56 bg-muted overflow-hidden">
-                      <img
+                      <img 
                         src={product.image || "/placeholder.svg"}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
@@ -362,10 +317,7 @@ export default function ProductsPage() {
 
       {cartOpen && (
         <ShoppingCartModal
-          cart={cart}
           onClose={() => setCartOpen(false)}
-          onRemove={removeFromCart}
-          onUpdateQuantity={updateQuantity}
         />
       )}
     </div>

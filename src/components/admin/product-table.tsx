@@ -22,6 +22,7 @@ interface Product {
   price: number
   description: string
   stock: string
+  slug: string
   categories?: Category
   images: ProductImage[]
 }
@@ -32,6 +33,7 @@ interface ProductFormData {
   description: string
   stock: string
   category: string
+  slug: string
   imageFiles: File[]
   imageUrls: string[]
 }
@@ -71,6 +73,7 @@ export default function ProductTable({ products, onDelete, loading, page, getPro
       price: data.price.toString(),
       description: data.description,
       stock: data.stock,
+      slug: data.slug,
       category: (data as any).category ?? (data as any).categories?.id?.toString() ?? "",
       imageFiles: [],
       imageUrls: (data as any).images?.map((img: any) => img.url) ?? [],

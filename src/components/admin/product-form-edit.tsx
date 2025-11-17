@@ -27,6 +27,7 @@ interface ProductFormModalProps {
 interface ProductFormData {
     name: string
     price: string
+    slug: string
     description: string
     stock: string
     category: string
@@ -41,10 +42,20 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
         description: "",
         stock: "",
         category: "",
+        slug: "",
         imageFiles: [],
         imageUrls: [],
     })
-    
+    // Fungsi untuk membuat slug otomatis
+    const generateSlug = (text: string) => {
+        return text
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")
+    }
+
     const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(false)
     const [loadingCategories, setLoadingCategories] = useState(false)
@@ -64,6 +75,7 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
                 description: data.description ?? "",
                 stock: data.stock ?? "",
                 category: data.category ?? "",
+                slug: data.slug ?? "",
                 imageFiles: [],
                 imageUrls: data.imageUrls ? [...data.imageUrls] : [],
             })
@@ -87,7 +99,11 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
-        setFormData((prev) => ({ ...prev, [name]: value }))
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+            ...(name === "name" && { slug: generateSlug(value) }),
+        }))
     }
 
     const handleCategoryChange = (value: string) => {
@@ -155,6 +171,7 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
             description: "",
             stock: "",
             category: "",
+            slug: "",
             imageFiles: [],
             imageUrls: [],
         })
@@ -182,6 +199,7 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
             form.append("description", formData.description)
             form.append("stock", formData.stock)
             form.append("category", formData.category)
+            form.append("slug", formData.slug)
 
             // 🔹 Gambar lama (masih ada)
             form.append("existingImages", JSON.stringify(existingImageUrls))
@@ -442,7 +460,7 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
                 </div>
 
                 {/* Fixed Footer */}
-                <DialogFooter className="px-6 py-4 border-t border-border bg-muted/50 sticky bottom-0 z-10 flex-row justify-end gap-2 sm:gap-2">
+                <DialogFooter className="px-6 py-4 border-t border-border bg-muted/50  flex-row justify-end gap-2 sm:gap-2">
                     <Button
                         type="button"
                         variant="outline"

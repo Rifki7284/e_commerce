@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
     const allowedForClient = ["/home", "/product", "/search"];
     const isAllowed = allowedForClient.some((p) => pathname.startsWith(p));
 
-    if (!isAllowed && !pathname.startsWith("/api")) {
+    if (!isAllowed && !pathname.startsWith("/")) {
       return NextResponse.redirect(new URL("/home", req.url));
     }
   }

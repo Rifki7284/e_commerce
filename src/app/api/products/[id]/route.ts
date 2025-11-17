@@ -33,6 +33,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const name = formData.get("name") as string;
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
+    const slug = formData.get("slug") as string;
     const stock = parseInt(formData.get("stock") as string, 10);
     const categoryRaw = formData.get("category") as string;
 
@@ -113,6 +114,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         name,
         price,
         description,
+        slug,
         stock,
         categoryId,
         images: {

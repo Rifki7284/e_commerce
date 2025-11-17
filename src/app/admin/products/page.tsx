@@ -15,6 +15,7 @@ interface Product {
   id: number
   name: string
   price: number
+  slug:string;
   description: string
   stock: string
   images: ProductImage[]
