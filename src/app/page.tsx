@@ -37,7 +37,7 @@ export default function AuthPage() {
             </button>
             <button
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
+              className={`flex-1 text- py-2 px-4 rounded-md font-medium transition-all ${
                 !isLogin
                   ? "bg-primary text-primary-foreground shadow-lg"
                   : "text-muted-foreground hover:text-foreground"
@@ -54,13 +54,6 @@ export default function AuthPage() {
             <RegisterForm onSwitchMode={() => setIsLogin(true)} />
           )}
         </div>
-
-        {/* Footer info */}
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          Demo: admin@example.com / password123 (Admin)
-          <br />
-          Demo: customer@example.com / password123 (Customer)
-        </p>
       </div>
     </div>
   )

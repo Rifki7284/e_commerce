@@ -67,7 +67,7 @@ export default function ClientHomePage() {
   const [cartOpen, setCartOpen] = useState(false)
   const [wishlist, setWishlist] = useState<string[]>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [perPage, setPerPage] = useState<number>(4)
+  const [perPage, setPerPage] = useState<number>(12)
   const [totalPage, setTotalPage] = useState<number>()
   const [product, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState<boolean>(true)
@@ -140,7 +140,7 @@ export default function ClientHomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ClientHeader cartCount={cart.length} onCartOpen={() => setCartOpen(true)} user={user} />
+      <ClientHeader cartCount={cart.length} onCartOpen={() => setCartOpen(true)}  />
 
       {/* Hero Banner with Promotion */}
       <section className="bg-linear-to-r from-primary/10 via-accent/10 to-primary/10 border-b border-border">

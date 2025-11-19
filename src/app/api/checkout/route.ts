@@ -90,7 +90,7 @@ export async function POST(req: Request) {
       token: transaction.token,
       reuse: false,
       order,
-    });
+    }, { status: 200 });
   } catch (error: any) {
     console.error("Checkout error:", error);
     return NextResponse.json(

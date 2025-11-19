@@ -30,5 +30,5 @@ export async function GET(
     });
     return NextResponse.json({
         product: products,
-    });
+    }, { status: 200 });
 }

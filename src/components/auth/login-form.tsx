@@ -12,8 +12,8 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ onSwitchMode }: LoginFormProps) {
-  const [email, setEmail] = useState("admin@example.com")
-  const [password, setPassword] = useState("password123")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -34,8 +34,6 @@ export default function LoginForm({ onSwitchMode }: LoginFormProps) {
       setError("Invalid email or password");
       return;
     }
-
-    // Login berhasil — redirect ke dashboard/home
     router.push("/home");
   };
 

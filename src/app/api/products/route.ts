@@ -5,79 +5,165 @@ import path from "path";
 import { writeFile } from "fs/promises";
 const prisma = new PrismaClient();
 export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams;
-  const count = await prisma.product.count();
-  const page = Number(searchParams.get("page"));
-  const perPage = Number(searchParams.get("perPage"));
-  const search = searchParams.get("search")
-  if (page == 1) {
-    const products = await prisma.product.findMany({
-      take: perPage,
-      where: {
-        OR: [
-          { name: { contains: search || "", mode: "insensitive" }, },
-          { description: { contains: search || "", mode: "insensitive" } }
-        ]
-      },
-      include: {
-        images: true,
-        categories: true,
-        reviews: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
+  try {
+    const searchParams = req.nextUrl.searchParams;
+    const count = await prisma.product.count();
+    const page = Number(searchParams.get("page"));
+    const perPage = Number(searchParams.get("perPage"));
+    const search = searchParams.get("search")
+    const category = searchParams.get("category")
+    const minPriceParam = searchParams.get("minPrice");
+    const maxPriceParam = searchParams.get("maxPrice");
+
+    const minPrice = minPriceParam ? Number(minPriceParam) : null;
+    const maxPrice = maxPriceParam ? Number(maxPriceParam) : null;
+    let priceFilter: any = {};
+
+    if (minPrice !== null) {
+      priceFilter.gte = minPrice;
+    }
+
+    if (maxPrice !== null) {
+      priceFilter.lte = maxPrice;
+    }
+    const sort = searchParams.get("sort");
+
+    let orderBy: any = undefined;
+
+    switch (sort) {
+      case "price-low":
+        orderBy = { price: "asc" };
+        break;
+
+      case "price-high":
+        orderBy = { price: "desc" };
+        break;
+      case "rating":
+        orderBy = null; 
+        break;
+      default:
+        orderBy = { id: "asc" };
+    }
+    if (sort === "rating") {
+      const skip = page == 1 ? 0 : (page - 1) * perPage;
+
+      const ratingData = await prisma.review.groupBy({
+        by: ["productId"],
+        _avg: { star: true },
+        orderBy: { _avg: { star: "desc" } },
+        skip: skip,
+        take: perPage,
+      });
+
+      const sortedIds = ratingData.map(r => r.productId);
+
+      const products = await prisma.product.findMany({
+        where: {
+          id: { in: sortedIds },
+          ...(category ? { categoryId: Number(category) } : {}),
+          ...(minPrice !== null || maxPrice !== null ? { price: priceFilter } : {}),
+          OR: [
+            { name: { contains: search || "", mode: "insensitive" } },
+            { description: { contains: search || "", mode: "insensitive" } },
+          ],
+        },
+        include: {
+          images: true,
+          categories: true,
+          reviews: {
+            include: {
+              user: { select: { id: true, name: true, email: true } },
+            },
+          },
+        },
+      });
+
+      const finalSorted = sortedIds
+        .map(id => products.find(p => p.id === id))
+        .filter(Boolean);
+
+      return NextResponse.json({
+        product: finalSorted,
+        count: count,
+        page: page,
+      }, { status: 200 });
+    }
+    if (page == 1) {
+      const products = await prisma.product.findMany({
+        take: perPage,
+        where: {
+          ...(category ? { categoryId: Number(category) } : {}),
+          ...(minPrice !== null || maxPrice !== null ? { price: priceFilter } : {}),
+          OR: [
+            { name: { contains: search || "", mode: "insensitive" } },
+            { description: { contains: search || "", mode: "insensitive" } },
+          ],
+        },
+        orderBy,
+        include: {
+          images: true,
+          categories: true,
+          reviews: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
               },
             },
           },
         },
-      },
-    });
-    return NextResponse.json({
-      product: products,
-      count: count,
-      page: page,
-    });
-  } else {
-    const skip = (page - 1) * perPage;
-    const products = await prisma.product.findMany({
-      skip: skip,
-      take: perPage,
-      where: {
-        OR: [
-          {
-            name: { contains: search || "", mode: "insensitive" },
-            description: { contains: search || "", mode: "insensitive" }
-          }
-        ]
-      },
-      include: {
-        images: true,
-        categories: true,
-        reviews: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
+      });
+      return NextResponse.json({
+        product: products,
+        count: count,
+        page: page,
+      }, { status: 200 });
+    } else {
+      const skip = (page - 1) * perPage;
+      const products = await prisma.product.findMany({
+        skip: skip,
+        take: perPage,
+        where: {
+          ...(category ? { categoryId: Number(category) } : {}),
+          ...(minPrice !== null || maxPrice !== null ? { price: priceFilter } : {}),
+          OR: [
+            { name: { contains: search || "", mode: "insensitive" } },
+            { description: { contains: search || "", mode: "insensitive" } },
+          ],
+        },
+        orderBy,
+        include: {
+          images: true,
+          categories: true,
+          reviews: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
               },
             },
           },
         },
-      },
-    });
-    return NextResponse.json({
-      product: products,
-      skip: skip,
-      count: count,
-      page: page,
-    });
+      });
+      return NextResponse.json({
+        product: products,
+        skip: skip,
+        count: count,
+        page: page,
+      }, { status: 200 });
+    }
   }
-
-
+  catch (e) {
+    return NextResponse.json({
+      message: e
+    }, { status: 500 })
+  }
 }
 
 // POST create new product
@@ -147,7 +233,7 @@ export async function POST(req: Request) {
       include: { images: true },
     });
 
-    return NextResponse.json(product);
+    return NextResponse.json(product, { status: 200 });
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(

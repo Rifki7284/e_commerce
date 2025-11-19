@@ -31,7 +31,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             return NextResponse.json({ error: "Item not found" }, { status: 404 });
         }
 
-        return NextResponse.json({ message: "Quantity updated successfully" });
+        return NextResponse.json({ message: "Quantity updated successfully" }, { status: 200 });
     } catch (error) {
         console.error("Error updating cart:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -60,7 +60,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
             return NextResponse.json({ error: "Item not found" }, { status: 404 });
         }
 
-        return NextResponse.json({ message: "Item removed successfully" });
+        return NextResponse.json({ message: "Item removed successfully" }, { status: 200 });
     } catch (error) {
         console.error("Error removing cart item:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });

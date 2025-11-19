@@ -14,7 +14,7 @@ export async function DELETE(
         id: Number(id),
       },
     });
-    return NextResponse.json(product);
+    return NextResponse.json(product, { status: 200 });
   } catch (e) {
     return NextResponse.json(
       { error: "Failed to delete product" },
@@ -124,7 +124,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       include: { images: true },
     });
 
-    return NextResponse.json(updatedProduct);
+    return NextResponse.json(updatedProduct, { status: 200 });
   } catch (error: any) {
     console.error("❌ Error updating product:", error);
     return NextResponse.json(

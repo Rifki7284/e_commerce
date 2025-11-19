@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
                 ]
             }
         })
-        return NextResponse.json(data)
+        return NextResponse.json(data, { status: 200 })
     }
     catch (e) {
         return NextResponse.json({ message: e }, { status: 500 })

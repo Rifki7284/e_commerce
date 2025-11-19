@@ -22,7 +22,7 @@ export async function DELETE() {
       where: { userId: user.id },
     })
 
-    return NextResponse.json({ message: "Cart cleared successfully" })
+    return NextResponse.json({ message: "Cart cleared successfully" }, { status: 200 })
   } catch (error) {
     console.error("Error clearing cart:", error)
     return NextResponse.json({ message: "Failed to clear cart" }, { status: 500 })
