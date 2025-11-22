@@ -39,6 +39,7 @@ interface ProductFormData {
 }
 interface ProductTableProps {
   products: Product[]
+  perPage: number
   onDelete: (id: string) => void
   getProduct: () => void
   loading: boolean
@@ -51,7 +52,7 @@ interface EditProps {
   data: Product | ProductFormData
 }
 
-export default function ProductTable({ products, onDelete, loading, page, getProduct }: ProductTableProps) {
+export default function ProductTable({ products, onDelete, loading, page, perPage, getProduct }: ProductTableProps) {
   const [id, setId] = useState<string>()
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [data, setData] = useState<ProductFormData | null>(null)
@@ -109,7 +110,7 @@ export default function ProductTable({ products, onDelete, loading, page, getPro
                 <tr key={product.id} className="transition-colors hover:bg-muted/50">
                   <td className="px-6 py-4 text-center">
                     <span className="text-sm text-muted-foreground font-medium">
-                      {idx + 1 + (page - 1) * 2}
+                      {(idx + 1) + (page - 1) * perPage}
                     </span>
                   </td>
                   <td className="px-6 py-4">

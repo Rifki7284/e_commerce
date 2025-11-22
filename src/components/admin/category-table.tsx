@@ -17,6 +17,7 @@ interface CategoryTableProps {
     category: Category[]
     onDelete: (id: string) => void
     loading: boolean
+    perPage: number
     page: number
     getCategory: () => void
 }
@@ -26,7 +27,7 @@ interface EditProps {
     data: Category
 }
 
-export default function CategoryTable({ category, onDelete, loading, page, getCategory }: CategoryTableProps) {
+export default function CategoryTable({ category, onDelete, loading, page, getCategory, perPage }: CategoryTableProps) {
     const [activeMenu, setActiveMenu] = useState<number | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [id, setId] = useState<string>("")
@@ -83,7 +84,7 @@ export default function CategoryTable({ category, onDelete, loading, page, getCa
                                 >
                                     <td className="px-6 py-4 text-center">
                                         <span className="text-sm text-muted-foreground font-medium">
-                                            {idx + 1 + (page - 1) * 2}
+                                            {(idx + 1) + (page - 1) * perPage}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">

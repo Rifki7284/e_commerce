@@ -15,7 +15,7 @@ interface Product {
   id: number
   name: string
   price: number
-  slug:string;
+  slug: string;
   description: string
   stock: string
   images: ProductImage[]
@@ -33,11 +33,8 @@ export default function AdminPage() {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPage) {
       setCurrentPage(page)
-      // di sini kamu bisa panggil API atau ubah data
     }
   }
-
-  // buat daftar halaman yang akan ditampilkan (misal 1 ... 4 5 6 ... 10)
   const getVisiblePages = () => {
     const pages: (number | string)[] = []
 
@@ -146,7 +143,7 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
-        <ProductTable getProduct={getProduct} products={products ?? []} page={currentPage} onDelete={handleDeleteProduct} loading={loading} />
+        <ProductTable perPage={parseInt(perPage)} getProduct={getProduct} products={products ?? []} page={currentPage} onDelete={handleDeleteProduct} loading={loading} />
         <Pagination>
           <PaginationContent>
             <PaginationItem>

@@ -104,8 +104,6 @@ export default function ShoppingCart({ onClose }: ShoppingCartProps) {
   )
 
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
-
-  // ========================= 💳 MIDTRANS CHECKOUT =========================
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     setIsProcessing(true);
@@ -157,9 +155,10 @@ export default function ShoppingCart({ onClose }: ShoppingCartProps) {
           alert("Pembayaran berhasil 🎉");
           try {
             await fetch("/api/cart/clear", { method: "DELETE" });
+            console.log(data)
             await fetch("/api/checkout/notification", {
               method: "POST",
-              body: JSON.stringify({ orderId: data.order.id, transaction_status: "paid" }),
+              body: JSON.stringify({ orderId: data.order.id, transaction_status: "paid",payment_method:result.payment_type }),
             });
             setCart([]);
           } catch (err) {

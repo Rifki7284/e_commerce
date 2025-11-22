@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get("page"));
     const perPage = Number(searchParams.get("perPage"));
     const search = searchParams.get("search")
+    const skip = page == 1 ? 0 : (page - 1) * perPage;
     if (perPage) {
         if (page == 1) {
             const category = await prisma.category.findMany({
@@ -25,6 +26,8 @@ export async function GET(req: NextRequest) {
             }, { status: 200 });
         } else {
             const category = await prisma.category.findMany({
+                take: perPage,
+                skip: skip,
                 where: {
                     OR: [
                         {
@@ -35,6 +38,8 @@ export async function GET(req: NextRequest) {
             });
             return NextResponse.json({
                 category: category,
+                count: count,
+                page: page,
             }, { status: 200 });
         }
     }

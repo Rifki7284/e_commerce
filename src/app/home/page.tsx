@@ -140,7 +140,7 @@ export default function ClientHomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ClientHeader cartCount={cart.length} onCartOpen={() => setCartOpen(true)}  />
+      <ClientHeader onCartOpen={() => setCartOpen(true)} />
 
       {/* Hero Banner with Promotion */}
       <section className="bg-linear-to-r from-primary/10 via-accent/10 to-primary/10 border-b border-border">

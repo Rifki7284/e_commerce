@@ -269,7 +269,7 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <ClientHeader cartCount={cart.length} onCartOpen={() => setCartOpen(true)} user={user} />
+        <ClientHeader onCartOpen={() => setCartOpen(true)} />
         <DetailSkeleton />
       </div>
     )
@@ -278,7 +278,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen bg-background">
-        <ClientHeader cartCount={cart.length} onCartOpen={() => setCartOpen(true)} user={user} />
+        <ClientHeader onCartOpen={() => setCartOpen(true)} />
         <div className="container mx-auto px-4 py-16 text-center">
           <h2 className="text-2xl font-bold mb-4">Product Not Found</h2>
           <Link href="/client/products" className="text-primary hover:underline">
@@ -297,7 +297,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ClientHeader cartCount={cart.length} onCartOpen={() => setCartOpen(true)} user={user} />
+      <ClientHeader onCartOpen={() => setCartOpen(true)} />
 
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}

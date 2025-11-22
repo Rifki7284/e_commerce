@@ -1,21 +1,33 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ShoppingCart, LogOut, Menu, X, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 
 interface ClientHeaderProps {
-  cartCount: number
   onCartOpen: () => void
 }
 
-export default function ClientHeader({ cartCount, onCartOpen }: ClientHeaderProps) {
+export default function ClientHeader({ onCartOpen }: ClientHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [cartCount, setCartCount] = useState<number>(0)
   const router = useRouter()
-
+  const getCartLength = async () => {
+    try {
+      const res = await fetch("api/cart/length")
+      const data = await res.json()
+      setCartCount(data.data)
+    }
+    catch (e) {
+      console.log(e)
+    }
+  }
+  useEffect(() => {
+    getCartLength()
+  }, [])
   const handleLogout = () => {
     signOut({
       redirect: true,
@@ -49,19 +61,24 @@ export default function ClientHeader({ cartCount, onCartOpen }: ClientHeaderProp
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link 
-              href="/home" 
+            <Link
+              href="/home"
               className="text-foreground hover:text-primary transition-colors font-medium"
             >
               Home
             </Link>
-            <Link 
-              href="/product" 
+            <Link
+              href="/product"
               className="text-foreground hover:text-primary transition-colors font-medium"
             >
               Products
             </Link>
-            
+            <Link
+              href="/transaction"
+              className="text-foreground hover:text-primary transition-colors font-medium"
+            >
+              Orders
+            </Link>
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="relative w-80">
               <Search
@@ -127,21 +144,21 @@ export default function ClientHeader({ cartCount, onCartOpen }: ClientHeaderProp
         <div className="md:hidden border-t border-border bg-background">
           <nav className="container mx-auto px-4 py-4">
             <div className="flex flex-col space-y-3">
-              <Link 
-                href="/home" 
+              <Link
+                href="/home"
                 className="px-4 py-2 text-foreground hover:bg-muted rounded-lg transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </Link>
-              <Link 
-                href="/product" 
+              <Link
+                href="/product"
                 className="px-4 py-2 text-foreground hover:bg-muted rounded-lg transition-colors font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Products
               </Link>
-              
+
               {/* Mobile Search */}
               <form onSubmit={handleSearch} className="px-4 py-2">
                 <div className="relative">

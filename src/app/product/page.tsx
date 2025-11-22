@@ -20,8 +20,10 @@ export interface Product {
 }
 
 interface Category {
+  id: number
   name: string
   slug: string
+  iconName: string
 }
 
 interface ProductImage {
@@ -42,12 +44,38 @@ export interface Review {
   userId: number
   user: ReviewUser
 }
-interface Category {
-  id: number
-  name: string
-  slug: string
-  iconName: string
+
+// Skeleton Card Component
+function ProductSkeleton() {
+  return (
+    <div className="bg-card rounded-lg border border-border overflow-hidden animate-pulse">
+      {/* Image Skeleton */}
+      <div className="relative h-48 bg-muted" />
+      
+      {/* Content Skeleton */}
+      <div className="p-4 space-y-3">
+        {/* Category */}
+        <div className="h-3 w-20 bg-muted rounded" />
+        
+        {/* Title */}
+        <div className="space-y-2">
+          <div className="h-4 w-full bg-muted rounded" />
+          <div className="h-4 w-3/4 bg-muted rounded" />
+        </div>
+        
+        {/* Rating */}
+        <div className="h-4 w-32 bg-muted rounded" />
+        
+        {/* Price */}
+        <div className="h-6 w-24 bg-muted rounded" />
+        
+        {/* Button */}
+        <div className="h-10 w-full bg-muted rounded-lg" />
+      </div>
+    </div>
+  )
 }
+
 export default function ProductsPage() {
   const [cart, setCart] = useState<any[]>([])
   const [cartOpen, setCartOpen] = useState(false)
@@ -61,11 +89,17 @@ export default function ProductsPage() {
   const router = useRouter()
   const [addingToCart, setAddingToCart] = useState<number | null>(null)
   const [category, setCategory] = useState<Category[]>([])
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [perPage, setPerPage] = useState<number>(12)
+  const [totalPage, setTotalPage] = useState<number>()
+  const [loadProduct, setLoadProduct] = useState<boolean>(true)
+
   const getCategory = async () => {
     const res = await fetch(`/api/category`)
     const data = await res.json()
     setCategory(data.category)
   }
+
   const addToCart = async (product: Product) => {
     setAddingToCart(product.id)
     try {
@@ -102,25 +136,26 @@ export default function ProductsPage() {
     }
   }
 
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [perPage, setPerPage] = useState<number>(12)
-  const [totalPage, setTotalPage] = useState<number>()
-
   const getProduct = async () => {
     try {
-      const res = await fetch(`/api/products?page=${currentPage}&perPage=${perPage}&search=${search == null ? "" : search}&category=${selectedCategory}&maxPrice=${priceRange[1]}&minPrice=${priceRange[0]}&sort=${sortBy}`)
+      setLoadProduct(true)
+      const res = await fetch(
+        `/api/products?page=${currentPage}&perPage=${perPage}&search=${search == null ? "" : search}&category=${selectedCategory}&maxPrice=${priceRange[1]}&minPrice=${priceRange[0]}&sort=${sortBy}`
+      )
       const data = await res.json()
       setProducts(data.product || [])
       setTotalPage(Math.ceil(data.count / Number(perPage)))
+      setLoadProduct(false)
     } catch (error) {
       console.error("Error fetching products:", error)
+      setLoadProduct(false)
     }
   }
 
   useEffect(() => {
     getProduct()
     getCategory()
-  }, [currentPage, search, selectedCategory, priceRange,sortBy])
+  }, [currentPage, search, selectedCategory, priceRange, sortBy])
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,7 +182,7 @@ export default function ProductsPage() {
                     <input
                       type="radio"
                       name="category"
-                      value={""}
+                      value=""
                       checked={selectedCategory === ""}
                       onChange={(e) => setSelectedCategory(e.target.value)}
                       className="w-4 h-4"
@@ -169,9 +204,6 @@ export default function ProductsPage() {
                       </label>
                     ))
                   ) : null}
-
-
-
                 </div>
               </div>
 
@@ -208,6 +240,7 @@ export default function ProductsPage() {
                   {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
                 </p>
               </div>
+
               {/* Sort */}
               <div>
                 <p className="text-sm font-semibold text-foreground mb-3">Sort By</p>
@@ -227,7 +260,15 @@ export default function ProductsPage() {
 
           {/* Products Grid */}
           <div className="flex-1">
-            {product?.length > 0 ? (
+            {loadProduct ? (
+              // Loading State with Skeletons
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(12)].map((_, index) => (
+                  <ProductSkeleton key={index} />
+                ))}
+              </div>
+            ) : product?.length > 0 ? (
+              // Products Grid
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {product.map((item) => (
                   <div
@@ -333,12 +374,13 @@ export default function ProductsPage() {
                 ))}
               </div>
             ) : (
+              // Empty State
               <div className="text-center py-12">
                 <p className="text-muted-foreground mb-4">No products found matching your filters</p>
                 <button
                   onClick={() => {
-                    setSelectedCategory("all")
-                    setPriceRange([0, 2000])
+                    setSelectedCategory("")
+                    setPriceRange([0, 25000000])
                   }}
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90"
                 >

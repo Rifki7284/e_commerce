@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { orderId, transaction_status } = body;
+    const { orderId, transaction_status, payment_method } = body;
 
     console.log("📩 Webhook received:", body);
 
@@ -18,11 +18,10 @@ export async function POST(req: Request) {
     // Default status
     let status: "paid" | "pending" | "failed" = "pending";
 
-    // Tentukan status berdasarkan status dari Midtrans / Gateway
     switch (transaction_status) {
       case "capture":
       case "settlement":
-      case "paid": 
+      case "paid":
         status = "paid";
         break;
       case "cancel":
@@ -48,12 +47,20 @@ export async function POST(req: Request) {
 
     const updatedOrder = await prisma.order.update({
       where: { id: orderIdNum },
-      data: { status },
+      data: {
+        status,
+        paymentMethod: payment_method || null, // << Tambahkan update payment method-nya
+      },
     });
 
     console.log("✅ Order updated:", updatedOrder);
 
-    return NextResponse.json({ message: "OK", updatedStatus: status });
+    return NextResponse.json({
+      message: "OK",
+      updatedStatus: status,
+      paymentMethod: payment_method || null
+    });
+
   } catch (error: any) {
     console.error("❌ Webhook error:", error);
     return NextResponse.json(

@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  
 }
 
 datasource db {
@@ -120,6 +121,7 @@ model Order {
   status        String      @default("pending")
   snapToken     String?
   transactionId String?     @unique
+  paymentMethod String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime?   @updatedAt
   user          User        @relation(fields: [userId], references: [id])

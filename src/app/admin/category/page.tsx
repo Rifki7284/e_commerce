@@ -24,11 +24,8 @@ export default function AdminPage() {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPage) {
       setCurrentPage(page)
-      // di sini kamu bisa panggil API atau ubah data
     }
   }
-
-  // buat daftar halaman yang akan ditampilkan (misal 1 ... 4 5 6 ... 10)
   const getVisiblePages = () => {
     const pages: (number | string)[] = []
 
@@ -137,7 +134,7 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
-        <CategoryTable getCategory={getCategory} category={category ?? []} page={currentPage} onDelete={handleDeleteProduct} loading={loading} />
+        <CategoryTable perPage={parseInt(perPage)} getCategory={getCategory} category={category ?? []} page={currentPage} onDelete={handleDeleteProduct} loading={loading} />
         <Pagination>
           <PaginationContent>
             <PaginationItem>
