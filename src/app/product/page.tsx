@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ShoppingCart, Heart, Star, Loader2 } from "lucide-react"
+import { ShoppingCart, Heart, Star, Loader2, Filter, X } from "lucide-react"
 import ClientHeader from "@/components/client/client-header"
 import ShoppingCartModal from "@/components/store/shopping-cart"
 import formatPrice from "@/lib/formatPrice"
@@ -77,7 +77,6 @@ function ProductSkeleton() {
 }
 
 export default function ProductsPage() {
-  const [cart, setCart] = useState<any[]>([])
   const [cartOpen, setCartOpen] = useState(false)
   const [wishlist, setWishlist] = useState<string[]>([])
   const [selectedCategory, setSelectedCategory] = useState("")
@@ -93,6 +92,7 @@ export default function ProductsPage() {
   const [perPage, setPerPage] = useState<number>(12)
   const [totalPage, setTotalPage] = useState<number>()
   const [loadProduct, setLoadProduct] = useState<boolean>(true)
+  const [filterOpen, setFilterOpen] = useState(false)
 
   const getCategory = async () => {
     const res = await fetch(`/api/category`)
@@ -157,126 +157,167 @@ export default function ProductsPage() {
     getCategory()
   }, [currentPage, search, selectedCategory, priceRange, sortBy])
 
+  const FilterContent = () => (
+    <div className="bg-card border border-border rounded-lg p-4 md:p-6">
+      <div className="flex items-center justify-between mb-4 lg:block">
+        <h3 className="font-semibold text-foreground">Filters</h3>
+        <button
+          onClick={() => setFilterOpen(false)}
+          className="lg:hidden p-1 hover:bg-muted rounded"
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Category Filter */}
+      <div className="mb-6">
+        <p className="text-sm font-semibold text-foreground mb-3">Category</p>
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="category"
+              value=""
+              checked={selectedCategory === ""}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-4 h-4"
+            />
+            <span className="text-sm text-muted-foreground capitalize">All</span>
+          </label>
+          {category?.length > 0 ? (
+            category.map((item, index) => (
+              <label key={index} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="category"
+                  value={item.id.toString()}
+                  checked={selectedCategory === item.id.toString()}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm text-muted-foreground capitalize">{item.name}</span>
+              </label>
+            ))
+          ) : null}
+        </div>
+      </div>
+
+      {/* Price Filter */}
+      <div className="mb-6">
+        <p className="text-sm font-semibold text-foreground mb-3">Price Range</p>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Min Price</label>
+            <input
+              type="number"
+              min="0"
+              max="25000000"
+              value={priceRange[0]}
+              onChange={(e) => setPriceRange([Number.parseInt(e.target.value) || 0, priceRange[1]])}
+              className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
+              placeholder="0"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Max Price</label>
+            <input
+              type="number"
+              min="0"
+              max="25000000"
+              value={priceRange[1]}
+              onChange={(e) => setPriceRange([priceRange[0], Number.parseInt(e.target.value) || 25000000])}
+              className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
+              placeholder="25000000"
+            />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
+        </p>
+      </div>
+
+      {/* Sort */}
+      <div>
+        <p className="text-sm font-semibold text-foreground mb-3">Sort By</p>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="w-full px-3 py-2 bg-input border border-border rounded-lg text-sm text-foreground"
+        >
+          <option value="featured">Featured</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Highest Rated</option>
+        </select>
+      </div>
+    </div>
+  )
+
   return (
     <div className="min-h-screen bg-background">
-      <ClientHeader cartCount={cart.length} onCartOpen={() => setCartOpen(true)} />
+      <ClientHeader onCartOpen={() => setCartOpen(true)} />
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Header - Sticky */}
-        <div className="sticky top-0 z-10 bg-background pb-6 mb-2">
-          <h1 className="text-4xl font-bold text-foreground mb-2">All Products</h1>
-          <p className="text-muted-foreground">Browse our complete collection</p>
+      <div className="container mx-auto px-4 py-4 md:py-8">
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-background pb-4 md:pb-6 mb-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1 md:mb-2">All Products</h1>
+              <p className="text-sm md:text-base text-muted-foreground">Browse our complete collection</p>
+            </div>
+            
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setFilterOpen(true)}
+              className="lg:hidden flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold"
+            >
+              <Filter size={18} />
+              <span>Filters</span>
+            </button>
+          </div>
         </div>
 
-        <div className="flex gap-8">
-          {/* Filters Sidebar - Sticky */}
-          <div className="w-64 shrink-0">
-            <div className="sticky top-32 bg-card border border-border rounded-lg p-6">
-              <h3 className="font-semibold text-foreground mb-4">Filters</h3>
-
-              {/* Category Filter */}
-              <div className="mb-6">
-                <p className="text-sm font-semibold text-foreground mb-3">Category</p>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="category"
-                      value=""
-                      checked={selectedCategory === ""}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-4 h-4"
-                    />
-                    <span className="text-sm text-muted-foreground capitalize">All</span>
-                  </label>
-                  {category?.length > 0 ? (
-                    category.map((item, index) => (
-                      <label key={index} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="category"
-                          value={item.id.toString()}
-                          checked={selectedCategory === item.id.toString()}
-                          onChange={(e) => setSelectedCategory(e.target.value)}
-                          className="w-4 h-4"
-                        />
-                        <span className="text-sm text-muted-foreground capitalize">{item.name}</span>
-                      </label>
-                    ))
-                  ) : null}
-                </div>
-              </div>
-
-              {/* Price Filter */}
-              <div className="mb-6">
-                <p className="text-sm font-semibold text-foreground mb-3">Price Range</p>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Min Price</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="25000000"
-                      value={priceRange[0]}
-                      onChange={(e) => setPriceRange([Number.parseInt(e.target.value) || 0, priceRange[1]])}
-                      className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
-                      placeholder="0"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Max Price</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="25000000"
-                      value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], Number.parseInt(e.target.value) || 25000000])}
-                      className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
-                      placeholder="25000000"
-                    />
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
-                </p>
-              </div>
-
-              {/* Sort */}
-              <div>
-                <p className="text-sm font-semibold text-foreground mb-3">Sort By</p>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2 bg-input border border-border rounded-lg text-sm text-foreground"
-                >
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Highest Rated</option>
-                </select>
-              </div>
+        <div className="flex gap-4 md:gap-8">
+          {/* Desktop Filters Sidebar */}
+          <div className="hidden lg:block w-64 shrink-0">
+            <div className="sticky top-32">
+              <FilterContent />
             </div>
           </div>
+
+          {/* Mobile Filter Overlay */}
+          {filterOpen && (
+            <div className="lg:hidden fixed inset-0 bg-black/50 z-50" onClick={() => setFilterOpen(false)}>
+              <div 
+                className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-background overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-4">
+                  <FilterContent />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Products Grid */}
           <div className="flex-1">
             {loadProduct ? (
               // Loading State with Skeletons
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
                 {[...Array(12)].map((_, index) => (
                   <ProductSkeleton key={index} />
                 ))}
               </div>
             ) : product?.length > 0 ? (
               // Products Grid
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
                 {product.map((item) => (
                   <div
                     key={item.id}
                     className="group bg-card rounded-lg border border-border overflow-hidden hover:shadow-lg transition-shadow"
                   >
                     {/* Image Container */}
-                    <div className="relative h-48 bg-muted overflow-hidden">
+                    <div className="relative h-40 sm:h-48 bg-muted overflow-hidden">
                       <img
                         src={item.images?.[0]?.url || "/placeholder.svg"}
                         alt={item.name}
@@ -284,9 +325,9 @@ export default function ProductsPage() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 cursor-pointer"
                       />
 
-                      <button className="absolute top-3 left-3 p-2 bg-white rounded-full shadow-md hover:bg-muted transition-colors">
+                      <button className="absolute top-2 left-2 md:top-3 md:left-3 p-1.5 md:p-2 bg-white rounded-full shadow-md hover:bg-muted transition-colors">
                         <Heart
-                          size={18}
+                          size={16}
                           className={
                             wishlist.includes(item.id.toString())
                               ? "fill-destructive text-destructive"
@@ -296,24 +337,24 @@ export default function ProductsPage() {
                       </button>
 
                       {item.stock < 10 && item.stock > 0 && (
-                        <div className="absolute top-3 right-3 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-orange-500 text-white px-2 py-0.5 md:px-3 md:py-1 rounded-full text-xs font-semibold">
                           Only {item.stock} left
                         </div>
                       )}
 
                       {item.stock === 0 && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                          <span className="text-white font-bold text-lg">Out of Stock</span>
+                          <span className="text-white font-bold text-base md:text-lg">Out of Stock</span>
                         </div>
                       )}
                     </div>
 
                     {/* Content */}
-                    <div className="p-4">
+                    <div className="p-3 md:p-4">
                       <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                         {item.categories?.name || "Uncategorized"}
                       </p>
-                      <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
+                      <h3 className="font-semibold text-sm md:text-base text-foreground mb-2 line-clamp-2">
                         {item.name}
                       </h3>
 
@@ -331,7 +372,7 @@ export default function ProductsPage() {
                             return (
                               <Star
                                 key={i}
-                                size={16}
+                                size={14}
                                 className={
                                   filled ? "fill-yellow-400 text-yellow-400" : "text-gray-400"
                                 }
@@ -345,8 +386,8 @@ export default function ProductsPage() {
                       </div>
 
                       {/* Price */}
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className="text-lg font-bold text-foreground">
+                      <div className="flex items-center gap-2 mb-3 md:mb-4">
+                        <span className="text-base md:text-lg font-bold text-foreground">
                           {formatPrice(item.price)}
                         </span>
                       </div>
@@ -355,17 +396,17 @@ export default function ProductsPage() {
                       <button
                         onClick={() => addToCart(item)}
                         disabled={item.stock === 0 || addingToCart === item.id}
-                        className="w-full py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-2 bg-primary text-primary-foreground rounded-lg text-sm md:text-base font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {addingToCart === item.id ? (
                           <>
-                            <Loader2 size={18} className="animate-spin" />
-                            Adding...
+                            <Loader2 size={16} className="animate-spin" />
+                            <span className="hidden sm:inline">Adding...</span>
                           </>
                         ) : (
                           <>
-                            <ShoppingCart size={18} />
-                            {item.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                            <ShoppingCart size={16} />
+                            <span>{item.stock === 0 ? "Out of Stock" : "Add to Cart"}</span>
                           </>
                         )}
                       </button>
@@ -376,13 +417,13 @@ export default function ProductsPage() {
             ) : (
               // Empty State
               <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">No products found matching your filters</p>
+                <p className="text-sm md:text-base text-muted-foreground mb-4">No products found matching your filters</p>
                 <button
                   onClick={() => {
                     setSelectedCategory("")
                     setPriceRange([0, 25000000])
                   }}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm md:text-base font-semibold hover:bg-primary/90"
                 >
                   Reset Filters
                 </button>

@@ -233,7 +233,7 @@ export default function OrdersPage() {
                                             </td>
                                             <td className="px-4 lg:px-6 py-3 lg:py-4 whitespace-nowrap text-right text-sm">
                                                 <button
-                                                    onClick={() => router.push(`/orders/${order.id}`)}
+                                                    onClick={() => router.push(`/orders/${order.transactionId}`)}
                                                     className="text-primary hover:text-primary/80 font-semibold transition-colors px-3 py-1 rounded hover:bg-primary/10"
                                                 >
                                                     View
@@ -268,7 +268,7 @@ export default function OrdersPage() {
                         return (
                             <div
                                 key={order.id}
-                                onClick={() => router.push(`/orders/${order.id}`)}
+                                onClick={() => router.push(`/orders/${order.transactionId}`)}
                                 className="bg-card border border-border rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
                             >
                                 <div className="flex justify-between items-start mb-3">
