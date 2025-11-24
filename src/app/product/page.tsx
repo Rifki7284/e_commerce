@@ -51,24 +51,24 @@ function ProductSkeleton() {
     <div className="bg-card rounded-lg border border-border overflow-hidden animate-pulse">
       {/* Image Skeleton */}
       <div className="relative h-48 bg-muted" />
-      
+
       {/* Content Skeleton */}
       <div className="p-4 space-y-3">
         {/* Category */}
         <div className="h-3 w-20 bg-muted rounded" />
-        
+
         {/* Title */}
         <div className="space-y-2">
           <div className="h-4 w-full bg-muted rounded" />
           <div className="h-4 w-3/4 bg-muted rounded" />
         </div>
-        
+
         {/* Rating */}
         <div className="h-4 w-32 bg-muted rounded" />
-        
+
         {/* Price */}
         <div className="h-6 w-24 bg-muted rounded" />
-        
+
         {/* Button */}
         <div className="h-10 w-full bg-muted rounded-lg" />
       </div>
@@ -159,13 +159,13 @@ export default function ProductsPage() {
 
   const FilterContent = () => (
     <div className="bg-card border border-border rounded-lg p-4 md:p-6">
-      <div className="flex items-center justify-between mb-4 lg:block">
-        <h3 className="font-semibold text-foreground">Filters</h3>
+      <div className="flex items-center justify-between mb-4 lg:mb-6">
+        <h3 className="font-semibold text-foreground text-lg">Filters</h3>
         <button
           onClick={() => setFilterOpen(false)}
-          className="lg:hidden p-1 hover:bg-muted rounded"
+          className="lg:hidden p-2 hover:bg-muted rounded-full transition-colors"
         >
-          <X size={20} />
+          <X size={22} />
         </button>
       </div>
 
@@ -265,14 +265,14 @@ export default function ProductsPage() {
               <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1 md:mb-2">All Products</h1>
               <p className="text-sm md:text-base text-muted-foreground">Browse our complete collection</p>
             </div>
-            
+
             {/* Mobile Filter Button */}
             <button
               onClick={() => setFilterOpen(true)}
-              className="lg:hidden flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold"
+              className="lg:hidden flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm shadow-sm hover:bg-primary/90 transition-all active:scale-95"
             >
-              <Filter size={18} />
-              <span>Filters</span>
+              <Filter size={16} />
+              <span>Filter</span>
             </button>
           </div>
         </div>
@@ -287,16 +287,28 @@ export default function ProductsPage() {
 
           {/* Mobile Filter Overlay */}
           {filterOpen && (
-            <div className="lg:hidden fixed inset-0 bg-black/50 z-50" onClick={() => setFilterOpen(false)}>
-              <div 
-                className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-background overflow-y-auto"
+            <>
+              <div
+                className="lg:hidden fixed inset-0 bg-black/60 z-50 animate-in fade-in duration-200"
+                onClick={() => setFilterOpen(false)}
+              />
+              <div
+                className="lg:hidden fixed inset-y-0 right-0 w-full max-w-sm bg-background z-50 shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="p-4">
                   <FilterContent />
+
+                  {/* Apply Button for Mobile */}
+                  <button
+                    onClick={() => setFilterOpen(false)}
+                    className="w-full mt-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+                  >
+                    Apply Filters
+                  </button>
                 </div>
               </div>
-            </div>
+            </>
           )}
 
           {/* Products Grid */}
