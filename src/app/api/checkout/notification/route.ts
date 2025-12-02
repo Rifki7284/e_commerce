@@ -49,16 +49,35 @@ export async function POST(req: Request) {
       where: { id: orderIdNum },
       data: {
         status,
-        paymentMethod: payment_method || null, // << Tambahkan update payment method-nya
+        paymentMethod: payment_method || null,
+      },
+      include: {
+        orderItems: true,
       },
     });
+    if (status === "paid") {
+      console.log("📦 Payment successful → reducing stock...");
 
-    console.log("✅ Order updated:", updatedOrder);
+      for (const item of updatedOrder.orderItems) {
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: { decrement: item.quantity },
+          },
+        });
+
+        console.log(
+          `🟡 Reduced stock for product ${item.productId} by ${item.quantity}`
+        );
+      }
+
+      console.log("✅ All product stock updated!");
+    }
 
     return NextResponse.json({
       message: "OK",
       updatedStatus: status,
-      paymentMethod: payment_method || null
+      paymentMethod: payment_method || null,
     });
 
   } catch (error: any) {

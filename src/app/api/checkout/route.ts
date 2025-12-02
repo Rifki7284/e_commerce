@@ -71,8 +71,8 @@ export async function POST(req: Request) {
         name: item.name,
       })),
       customer_details: {
-        first_name: session.user.name || "User",
-        email: session.user.email || "user@example.com",
+        first_name: session.user.name,
+        email: session.user.email,
       },
     };
 

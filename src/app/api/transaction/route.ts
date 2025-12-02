@@ -17,12 +17,20 @@ export async function GET(req: NextRequest) {
             if (page == 1) {
                 const transaction = await prisma.order.findMany({
                     take: perPage,
-
                     where: {
                         status: "paid",
                         OR: [
                             { transactionId: { contains: search || "", mode: "insensitive" } }
                         ]
+                    },
+                    include: {
+                        orderItems: {
+                            include: {
+                                product: {
+
+                                }
+                            }
+                        }
                     }
                 })
 
@@ -40,7 +48,17 @@ export async function GET(req: NextRequest) {
                         OR: [
                             { transactionId: { contains: search || "", mode: "insensitive" } }
                         ]
+                    },
+                    include: {
+                        orderItems: {
+                            include: {
+                                product: {
+
+                                }
+                            }
+                        }
                     }
+
                 })
                 return NextResponse.json({
                     transaction: transaction,
@@ -56,7 +74,17 @@ export async function GET(req: NextRequest) {
                     OR: [
                         { transactionId: { contains: search || "", mode: "insensitive" } }
                     ]
+                },
+                include: {
+                    orderItems: {
+                        include: {
+                            product: {
+
+                            }
+                        }
+                    }
                 }
+
             })
             return NextResponse.json({
                 transaction: transaction,
