@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { writeFile } from "fs/promises";
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
@@ -55,7 +54,7 @@ export async function GET(req: NextRequest) {
         take: perPage,
       });
 
-      const sortedIds = ratingData.map(r => r.productId);
+      const sortedIds = ratingData.map((r: { productId: any; }) => r.productId);
 
       const products = await prisma.product.findMany({
         where: {
@@ -79,7 +78,7 @@ export async function GET(req: NextRequest) {
       });
 
       const finalSorted = sortedIds
-        .map(id => products.find(p => p.id === id))
+        .map((id: any) => products.find((p: { id: any; }) => p.id === id))
         .filter(Boolean);
 
       return NextResponse.json({

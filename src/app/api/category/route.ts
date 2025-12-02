@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-const prisma = new PrismaClient();
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const count = await prisma.category.count();
