@@ -146,7 +146,7 @@ export default function OrdersPage() {
 
     const getOrderTitle = (order: Order) => {
         if (order.orderItems && order.orderItems.length > 0) {
-            return order.orderItems[0].product?.name || "Product"
+            return order.orderItems[0].product?.name
         }
         return "Order"
     }
@@ -154,14 +154,14 @@ export default function OrdersPage() {
     const [cartOpen, setCartOpen] = useState(false)
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
             <ClientHeader onCartOpen={() => setCartOpen(true)} />
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
                 {/* Header */}
                 <div className="mb-6 sm:mb-8">
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                             <Package className="text-white" size={24} />
                         </div>
                         <h1 className="text-3xl sm:text-4xl font-black text-white">
@@ -186,7 +186,7 @@ export default function OrdersPage() {
                 </div>
 
                 {/* Desktop/Laptop Table View */}
-                <div className="hidden md:block bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
+                <div className="hidden md:block bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
@@ -260,7 +260,7 @@ export default function OrdersPage() {
                                             </td>
                                             <td className="px-6 py-4 text-sm text-white font-medium max-w-xs">
                                                 <div className="flex items-center gap-2">
-                                                    <Key size={16} className="text-blue-400 flex-shrink-0" />
+                                                    <Key size={16} className="text-blue-400 shrink-0" />
                                                     <span className="truncate">{orderTitle}</span>
                                                 </div>
                                             </td>
@@ -297,7 +297,7 @@ export default function OrdersPage() {
                                 <p className="text-slate-400 mb-6">Start shopping to see your orders here</p>
                                 <button
                                     onClick={() => router.push('/product')}
-                                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all"
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all"
                                 >
                                     <ShoppingBag size={18} />
                                     Browse Games
@@ -323,7 +323,7 @@ export default function OrdersPage() {
                             <div
                                 key={order.id}
                                 onClick={() => router.push(`/orders/${order.transactionId}`)}
-                                className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl shadow-lg p-4 hover:border-blue-500/50 transition-all cursor-pointer"
+                                className="bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl shadow-lg p-4 hover:border-blue-500/50 transition-all cursor-pointer"
                             >
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="flex-1">
@@ -337,7 +337,7 @@ export default function OrdersPage() {
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <Key size={16} className="text-blue-400 flex-shrink-0" />
+                                            <Key size={16} className="text-blue-400 shrink-0" />
                                             <h3 className="font-bold text-white text-base line-clamp-1">
                                                 {orderTitle}
                                             </h3>
@@ -380,7 +380,7 @@ export default function OrdersPage() {
                     })}
 
                     {!loading && orders.length === 0 && (
-                        <div className="text-center py-16 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl">
+                        <div className="text-center py-16 bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl">
                             <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Package size={40} className="text-slate-600" />
                             </div>
@@ -388,7 +388,7 @@ export default function OrdersPage() {
                             <p className="text-slate-400 mb-6">Start shopping to see your orders here</p>
                             <button
                                 onClick={() => router.push('/product')}
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all"
                             >
                                 <ShoppingBag size={18} />
                                 Browse Games
@@ -426,7 +426,7 @@ export default function OrdersPage() {
                                                     handlePageChange(page as number)
                                                 }}
                                                 className={page === currentPage 
-                                                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-500" 
+                                                    ? "bg-linear-to-r from-blue-600 to-purple-600 text-white border-blue-500" 
                                                     : "bg-slate-800 border-slate-700 text-white hover:bg-slate-700"}
                                             >
                                                 {page}
