@@ -1,151 +1,83 @@
-"use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Heart, ShoppingCart, Loader2, Star, Download, Key, Zap, TrendingUp, Award, Shield } from "lucide-react"
+import { ShoppingCart, Download, Key, Zap, TrendingUp, Award, Shield } from "lucide-react"
 import Link from "next/link"
 import ClientHeader from "@/components/client/client-header"
-import ShoppingCartModal from "@/components/store/shopping-cart"
-import formatPrice from "@/lib/formatPrice"
-
-export interface Product {
-  id: number
-  name: string
-  price: number
-  slug: string
-  description: string
-  stock: number
-  categories: Category
-  images: ProductImage[]
-  reviews?: Review[]
-}
-
-interface Category {
-  name: string
-  slug: string
-}
-
-interface ProductImage {
-  url: string
-}
-
-export interface ReviewUser {
-  id: number
-  name: string
-  email: string
-}
-
-export interface Review {
-  id: number
-  star: number
-  review: string
-  productId: number
-  userId: number
-  user: ReviewUser
-}
-
-// Loading Skeleton Component
-const ProductSkeleton = () => (
-  <div className="group bg-linear-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 overflow-hidden animate-pulse">
-    <div className="relative aspect-video bg-slate-700"></div>
-    <div className="p-4">
-      <div className="h-3 bg-slate-700 rounded w-1/3 mb-2"></div>
-      <div className="h-4 bg-slate-700 rounded w-full mb-2"></div>
-      <div className="h-4 bg-slate-700 rounded w-2/3 mb-3"></div>
-      <div className="flex items-center gap-2 mb-3">
-        <div className="h-4 bg-slate-700 rounded w-24"></div>
-      </div>
-      <div className="h-6 bg-slate-700 rounded w-1/2 mb-4"></div>
-      <div className="h-10 bg-slate-700 rounded w-full"></div>
-    </div>
-  </div>
-)
-
-export default function ClientHomePage() {
-  const [user, setUser] = useState<any>(null)
-  const [cart, setCart] = useState<any[]>([])
-  const [cartOpen, setCartOpen] = useState(false)
-  const [wishlist, setWishlist] = useState<string[]>([])
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [perPage, setPerPage] = useState<number>(8)
-  const [totalPage, setTotalPage] = useState<number>()
-  const [product, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [addingToCart, setAddingToCart] = useState<number | null>(null)
-  const router = useRouter()
-
-  const getProduct = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/products?page=${currentPage}&perPage=${perPage}`)
-      const data = await res.json()
-      setProducts(data.product || [])
-      setTotalPage(Math.ceil(data.count / Number(perPage)))
-    } catch (error) {
-      console.error("Error fetching products:", error)
-    } finally {
-      setLoading(false)
+import ProductGrid from "@/components/product/product-grid"
+import { Suspense } from "react"
+import ProductSkeleton from "@/components/product/product-skeleton"
+import { Metadata } from "next"
+export const metadata: Metadata = {
+  title: "GameKeys Indonesia – Steam Key Murah, Game Original, Gift Card & Top Up",
+  description:
+    "GameKeys Indonesia adalah tempat terbaik untuk membeli game original, Steam Key, Origin, Ubisoft, Epic Games, PlayStation, Xbox, dan Nintendo. Harga murah, pengiriman instan, 100% legal & terpercaya.",
+  keywords: [
+    "steam key murah",
+    "beli game original",
+    "steam indonesia",
+    "digital game key",
+    "game murah pc",
+    "gift card murah",
+    "top up game",
+    "origin key",
+    "ubisoft key",
+    "gamekeys"
+  ],
+  openGraph: {
+    title: "GameKeys Indonesia – Steam Key, Game Original & Gift Card Termurah",
+    siteName: "GameKeys Indonesia",
+    description:
+      "Beli game original dan digital key termurah! Steam, Epic Games, EA, Ubisoft, PlayStation, Xbox & Nintendo. Proses cepat, aman, dan terpercaya.",
+    locale: "id_ID",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GameKeys Indonesia – Steam Key & Game Original Termurah",
+    description:
+      "Tempat terbaik beli Steam Key, game original, gift card, dan top up. Harga murah, instan, legal, dan aman.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
     }
   }
+}
 
-  const toggleWishlist = (productId: string) => {
-    const updated = wishlist.includes(productId)
-      ? wishlist.filter((id) => id !== productId)
-      : [...wishlist, productId]
-    setWishlist(updated)
-    localStorage.setItem("wishlist", JSON.stringify(updated))
-  }
 
-  const addToCart = async (product: Product) => {
-    setAddingToCart(product.id)
-    try {
-      const res = await fetch("/api/cart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId: product.id,
-          quantity: 1,
-        }),
-      })
+export default async function HomePage({
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  const params = await searchParams
+  const page = params?.page ?? "1";
+  const perPage = "8";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const res = await fetch(`${baseUrl}/api/products?page=${page}&perPage=${perPage}`, {
+    cache: "no-store",
+  });
 
-      if (res.status === 401) {
-        alert("Silakan login terlebih dahulu untuk menambahkan ke keranjang.")
-        return
-      }
-
-      if (!res.ok) {
-        const err = await res.json()
-        console.error("Gagal menambahkan ke keranjang:", err)
-        alert("Terjadi kesalahan saat menambahkan ke keranjang.")
-        return
-      }
-
-      const data = await res.json()
-      console.log("✅ Added to cart:", data)
-    } catch (error) {
-      console.error("❌ Error adding to cart:", error)
-      alert("Terjadi kesalahan saat menambahkan ke keranjang.")
-    } finally {
-      setAddingToCart(null)
-    }
-  }
-
-  useEffect(() => {
-    getProduct()
-  }, [currentPage])
+  const data = await res.json();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-      <ClientHeader onCartOpen={() => setCartOpen(true)} />
+      <ClientHeader />
 
       {/* Hero Banner with Promotion */}
       <section className="relative overflow-hidden border-b border-slate-700">
         {/* Animated Background */}
+        
         <div className="absolute inset-0 bg-linear-to-br from-blue-900/30 via-purple-900/30 to-slate-900/30"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzIyMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
-        
+
         <div className="container mx-auto px-4 py-20 md:py-32 relative z-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-orange-500/20 to-red-500/20 backdrop-blur-sm border border-orange-500/30 rounded-full mb-6">
@@ -160,7 +92,7 @@ export default function ClientHomePage() {
               Instant Delivery
             </h1>
             <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              Get your favorite PC games, Steam keys, gift cards, and software instantly. 
+              Get your favorite PC games, Steam keys, gift cards, and software instantly.
               <span className="text-blue-400 font-semibold"> Safe, fast, and affordable.</span>
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -213,167 +145,17 @@ export default function ClientHomePage() {
       <section className="container mx-auto px-4 py-16">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+            <div className="w-1 h-8 bg-linear-to-b from-blue-500 to-purple-600 rounded-full"></div>
             <h2 className="text-4xl font-black text-white">Featured Games</h2>
           </div>
           <p className="text-slate-400 text-lg">Handpicked digital products just for you</p>
         </div>
 
-        {/* Loading State */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, index) => (
-              <ProductSkeleton key={index} />
-            ))}
-          </div>
-        ) : product.length === 0 ? (
-          /* Empty State */
-          <div className="text-center py-20 bg-linear-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700">
-            <div className="text-6xl mb-4">🎮</div>
-            <h3 className="text-2xl font-bold text-white mb-2">No Products Found</h3>
-            <p className="text-slate-400">Check back later for amazing deals!</p>
-          </div>
-        ) : (
-          /* Products Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {product.map((item) => (
-              <div
-                key={item.id}
-                className="group bg-linear-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 overflow-hidden hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300"
-              >
-                {/* Image Container */}
-                <div className="relative aspect-video bg-slate-950 overflow-hidden">
-                  <img
-                    src={item.images?.[0]?.url || "/placeholder.svg"}
-                    alt={item.name}
-                    onClick={() => router.push(`/product/${item.slug}`)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer"
-                  />
-
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                  <button
-                    onClick={() => toggleWishlist(item.id.toString())}
-                    className="absolute top-3 right-3 p-2 bg-slate-900/80 backdrop-blur-sm rounded-lg hover:bg-slate-800 transition-colors border border-slate-700"
-                  >
-                    <Heart
-                      size={18}
-                      className={
-                        wishlist.includes(item.id.toString())
-                          ? "fill-red-500 text-red-500"
-                          : "text-slate-400"
-                      }
-                    />
-                  </button>
-
-                  {/* Digital Badge */}
-                  <div className="absolute top-3 left-3 bg-blue-500/90 backdrop-blur-sm text-white px-2 py-1 rounded-md text-xs font-semibold flex items-center gap-1 border border-blue-400/30">
-                    <Key size={12} />
-                    Digital
-                  </div>
-
-                  {item.stock < 10 && item.stock > 0 && (
-                    <div className="absolute bottom-3 left-3 bg-orange-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-md text-xs font-semibold border border-orange-400/30">
-                      Only {item.stock} left
-                    </div>
-                  )}
-
-                  {item.stock === 0 && (
-                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-slate-300 font-bold text-lg">Out of Stock</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <p className="text-xs text-blue-400 uppercase tracking-wide mb-2 font-semibold">
-                    {item.categories?.name || "Digital Product"}
-                  </p>
-                  <h3 
-                    className="font-bold text-base text-white mb-3 line-clamp-2 cursor-pointer hover:text-blue-400 transition-colors"
-                    onClick={() => router.push(`/product/${item.slug}`)}
-                  >
-                    {item.name}
-                  </h3>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="flex items-center gap-0.5">
-                      {[...Array(5)].map((_, i) => {
-                        const reviews = item.reviews ?? []
-                        const avgStar =
-                          reviews.length > 0
-                            ? reviews.reduce((acc, r) => acc + r.star, 0) / reviews.length
-                            : 0
-                        const filled = i < Math.round(avgStar)
-
-                        return (
-                          <Star
-                            key={i}
-                            size={14}
-                            className={
-                              filled
-                                ? "fill-yellow-400 text-yellow-400"
-                                : "text-slate-600"
-                            }
-                          />
-                        )
-                      })}
-                    </div>
-                    <span className="text-xs text-slate-400">
-                      ({item.reviews?.length || 0})
-                    </span>
-                  </div>
-
-                  {/* Price */}
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-black text-white">
-                      {formatPrice(item.price)}
-                    </span>
-                    <div className="flex items-center gap-1 text-green-400 text-xs font-semibold">
-                      <Download size={12} />
-                      Instant
-                    </div>
-                  </div>
-
-                  {/* Add to Cart Button */}
-                  <button
-                    onClick={() => addToCart(item)}
-                    disabled={item.stock === 0 || addingToCart === item.id}
-                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-slate-700 disabled:to-slate-700 shadow-lg hover:shadow-blue-500/50"
-                  >
-                    {addingToCart === item.id ? (
-                      <>
-                        <Loader2 size={18} className="animate-spin" />
-                        Adding...
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingCart size={18} />
-                        {item.stock === 0 ? "Out of Stock" : "Add to Cart"}
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* View All Button */}
-        {product.length > 0 && (
-          <div className="text-center mt-12">
-            <Link
-              href="/product"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-xl font-bold transition-all"
-            >
-              View All Products
-              <TrendingUp size={20} />
-            </Link>
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Suspense fallback={<ProductSkeleton />}>
+            <ProductGrid product={data.product} />
+          </Suspense>
+        </div>
       </section>
 
       {/* Categories Section */}
@@ -381,31 +163,31 @@ export default function ClientHomePage() {
         <div className="container mx-auto px-4">
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-1 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full"></div>
+              <div className="w-1 h-8 bg-linear-to-b from-purple-500 to-pink-600 rounded-full"></div>
               <h2 className="text-4xl font-black text-white">Popular Categories</h2>
             </div>
             <p className="text-slate-400 text-lg">Explore our digital product collections</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { 
-                name: "PC Games", 
-                icon: "🎮", 
+              {
+                name: "PC Games",
+                icon: "🎮",
                 gradient: "from-blue-500/20 to-cyan-500/20",
                 border: "border-blue-500/30",
                 hover: "hover:border-blue-500/60"
               },
-              { 
-                name: "Gift Cards", 
-                icon: "🎁", 
+              {
+                name: "Gift Cards",
+                icon: "🎁",
                 gradient: "from-purple-500/20 to-pink-500/20",
                 border: "border-purple-500/30",
                 hover: "hover:border-purple-500/60"
               },
-              { 
-                name: "Software", 
-                icon: "💻", 
+              {
+                name: "Software",
+                icon: "💻",
                 gradient: "from-orange-500/20 to-red-500/20",
                 border: "border-orange-500/30",
                 hover: "hover:border-orange-500/60"
@@ -433,7 +215,7 @@ export default function ClientHomePage() {
           <h2 className="text-4xl font-black text-white mb-4">Why Choose GameKeys?</h2>
           <p className="text-slate-400 text-lg">Your trusted digital marketplace</p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
@@ -457,7 +239,7 @@ export default function ClientHomePage() {
               description: "Competitive pricing with regular discounts and deals"
             }
           ].map((feature, index) => (
-            <div 
+            <div
               key={index}
               className="bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl p-6 hover:border-blue-500/50 transition-all group"
             >
@@ -470,12 +252,6 @@ export default function ClientHomePage() {
           ))}
         </div>
       </section>
-
-      {cartOpen && (
-        <ShoppingCartModal
-          onClose={() => setCartOpen(false)}
-        />
-      )}
     </div>
   )
 }

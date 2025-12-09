@@ -263,7 +263,7 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-        <ClientHeader onCartOpen={() => setCartOpen(true)} />
+        <ClientHeader  />
         <DetailSkeleton />
       </div>
     )
@@ -272,7 +272,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
-        <ClientHeader onCartOpen={() => setCartOpen(true)} />
+        <ClientHeader  />
         <div className="container mx-auto px-4 py-16 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Product Not Found</h2>
           <Link href="/client/products" className="text-blue-400 hover:underline">
@@ -296,7 +296,7 @@ export default function ProductDetailPage() {
       <div className="fixed top-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="fixed bottom-20 left-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      <ClientHeader onCartOpen={() => setCartOpen(true)} />
+      <ClientHeader  />
 
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Breadcrumb */}

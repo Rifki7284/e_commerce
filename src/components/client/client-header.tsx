@@ -5,14 +5,13 @@ import Link from "next/link"
 import { ShoppingCart, LogOut, Menu, X, Search, User, ChevronDown, Package, Home, ShoppingBag, Gamepad2, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
+import ShoppingCartModal from "@/components/store/shopping-cart"
 
-interface ClientHeaderProps {
-  onCartOpen: () => void
-}
 
-export default function ClientHeader({ onCartOpen }: ClientHeaderProps) {
+export default function ClientHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [searchDrawerOpen, setSearchDrawerOpen] = useState(false)
+  const [cartOpen, setCartOpen] = useState<boolean>(false)
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [cartCount, setCartCount] = useState<number>(0)
@@ -151,7 +150,7 @@ export default function ClientHeader({ onCartOpen }: ClientHeaderProps) {
 
               {/* Cart Button */}
               <button
-                onClick={onCartOpen}
+                onClick={() => setCartOpen(true)}
                 className="relative p-2 hover:bg-slate-800 rounded-lg transition-all group"
                 aria-label="Shopping cart"
               >
@@ -181,11 +180,10 @@ export default function ClientHeader({ onCartOpen }: ClientHeaderProps) {
 
                 {/* Profile Dropdown */}
                 <div
-                  className={`absolute right-0 mt-2 w-56 bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden transition-all duration-200 origin-top-right ${
-                    profileMenuOpen
+                  className={`absolute right-0 mt-2 w-56 bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden transition-all duration-200 origin-top-right ${profileMenuOpen
                       ? 'opacity-100 scale-100 pointer-events-auto'
                       : 'opacity-0 scale-95 pointer-events-none'
-                  }`}
+                    }`}
                 >
                   <div className="py-2">
                     <button
@@ -236,17 +234,15 @@ export default function ClientHeader({ onCartOpen }: ClientHeaderProps) {
 
       {/* Mobile Search Drawer Overlay */}
       <div
-        className={`fixed inset-0 bg-black/70 backdrop-blur-sm z-50 md:hidden transition-opacity duration-300 ${
-          searchDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
+        className={`fixed inset-0 bg-black/70 backdrop-blur-sm z-50 md:hidden transition-opacity duration-300 ${searchDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
         onClick={toggleSearchDrawer}
       />
 
       {/* Mobile Search Drawer */}
       <div
-        className={`fixed top-0 left-0 right-0 bottom-0 bg-slate-900 z-50 md:hidden transition-transform duration-300 ease-out overflow-y-auto ${
-          searchDrawerOpen ? 'translate-y-0' : '-translate-y-full'
-        }`}
+        className={`fixed top-0 left-0 right-0 bottom-0 bg-slate-900 z-50 md:hidden transition-transform duration-300 ease-out overflow-y-auto ${searchDrawerOpen ? 'translate-y-0' : '-translate-y-full'
+          }`}
       >
         <div className="min-h-full flex flex-col">
           {/* Search Header */}
@@ -350,17 +346,15 @@ export default function ClientHeader({ onCartOpen }: ClientHeaderProps) {
 
       {/* Mobile Menu Drawer Overlay */}
       <div
-        className={`fixed inset-0 bg-black/70 backdrop-blur-sm z-50 md:hidden transition-opacity duration-300 ${
-          drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
+        className={`fixed inset-0 bg-black/70 backdrop-blur-sm z-50 md:hidden transition-opacity duration-300 ${drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
         onClick={toggleDrawer}
       />
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-slate-900 border-l border-slate-700 z-50 md:hidden shadow-2xl transition-transform duration-300 ease-out ${
-          drawerOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-slate-900 border-l border-slate-700 z-50 md:hidden shadow-2xl transition-transform duration-300 ease-out ${drawerOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Drawer Header */}
@@ -427,6 +421,7 @@ export default function ClientHeader({ onCartOpen }: ClientHeaderProps) {
           </div>
         </div>
       </div>
+      {cartOpen && <ShoppingCartModal onClose={() => setCartOpen(false)} />}
     </>
   )
 }
