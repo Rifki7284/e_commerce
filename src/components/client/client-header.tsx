@@ -20,7 +20,7 @@ export default function ClientHeader() {
 
   const getCartLength = async () => {
     try {
-      const res = await fetch("api/cart/length")
+      const res = await fetch("/api/cart/length")
       const data = await res.json()
       setCartCount(data.data)
     }
@@ -33,7 +33,6 @@ export default function ClientHeader() {
     getCartLength()
   }, [])
 
-  // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {

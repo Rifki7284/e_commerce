@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const searchParams = req.nextUrl.searchParams;
+    const searchParams=req.nextUrl.searchParams;
     const productId = Number(searchParams.get("productId"));
     const session = await auth();
     if (!session || session.user?.role === "Admin") {
