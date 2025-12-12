@@ -37,7 +37,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
     slug: "",
     price: "",
     description: "",
-    stock: "",
+    stock: "0",
     categoryId: "",
     imageFiles: [] as File[],
     imageUrls: [] as string[],
@@ -257,7 +257,7 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
                 onValueChange={handleCategoryChange}
                 disabled={loadingCategories}
               >
-                <SelectTrigger className="h-11 border-2">
+                <SelectTrigger className="h-11 border-2 w-full">
                   <SelectValue placeholder={loadingCategories ? "Loading categories..." : "Select a category"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -284,14 +284,14 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
             </div>
 
             {/* Price and Stock in Grid */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 w-full">
               {/* Price */}
               <div className="space-y-2">
                 <Label htmlFor="price" className="text-sm font-semibold text-foreground flex items-center gap-2">
                   Price
                   <span className="text-red-500">*</span>
                 </Label>
-                <div className="relative">
+                <div className="relative w-full">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium pointer-events-none">
                     Rp
                   </span>
@@ -305,30 +305,12 @@ export default function ProductFormModal({ isOpen, onClose, onSuccess }: Product
                     step="1"
                     min="0"
                     required
-                    className="h-11 pl-10 pr-4 border-2"
+                    className="h-11 pl-10 w-full pr-4 border-2"
                   />
                 </div>
               </div>
 
-              {/* Stock */}
-              <div className="space-y-2">
-                <Label htmlFor="stock" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  Stock
-                  <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="stock"
-                  type="number"
-                  name="stock"
-                  value={formData.stock}
-                  onChange={handleChange}
-                  placeholder="0"
-                  step="1"
-                  min="0"
-                  required
-                  className="h-11 border-2"
-                />
-              </div>
+              
             </div>
 
             {/* Description */}

@@ -61,7 +61,7 @@ export default function RegisterForm({ onSwitchMode }: RegisterFormProps) {
       return
     }
 
-    router.push("/auth/signin")
+    router.push("/home")
   }
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

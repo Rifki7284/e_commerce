@@ -1,27 +1,26 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { AlertCircle, Mail, Lock, ArrowRight } from "lucide-react"
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { AlertCircle, Mail, Lock, ArrowRight } from "lucide-react";
 import { signIn } from "next-auth/react";
 interface LoginFormProps {
-  onSwitchMode: () => void
+  onSwitchMode: () => void;
 }
 
 export default function LoginForm({ onSwitchMode }: LoginFormProps) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     const res = await signIn("credentials", {
       redirect: false,
       email: email,
@@ -47,9 +46,14 @@ export default function LoginForm({ onSwitchMode }: LoginFormProps) {
       )}
 
       <div className="space-y-3">
-        <label className="block text-sm font-semibold text-foreground">Email Address</label>
+        <label className="block text-sm font-semibold text-foreground">
+          Email Address
+        </label>
         <div className="relative">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+          <Mail
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+            size={20}
+          />
           <Input
             type="email"
             value={email}
@@ -62,9 +66,14 @@ export default function LoginForm({ onSwitchMode }: LoginFormProps) {
       </div>
 
       <div className="space-y-3">
-        <label className="block text-sm font-semibold text-foreground">Password</label>
+        <label className="block text-sm font-semibold text-foreground">
+          Password
+        </label>
         <div className="relative">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+          <Lock
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+            size={20}
+          />
           <Input
             type="password"
             value={password}
@@ -105,5 +114,5 @@ export default function LoginForm({ onSwitchMode }: LoginFormProps) {
         </button>
       </p>
     </form>
-  )
+  );
 }

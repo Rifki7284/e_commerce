@@ -8,7 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Loader2, Sparkles, Check } from "lucide-react";
 
@@ -31,9 +37,9 @@ const generateSlug = (name: string): string => {
   return name
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 };
 
 export default function CategoryFormModal({
@@ -57,38 +63,32 @@ export default function CategoryFormModal({
     defaultValues: { name: "", iconEmoji: "" },
   });
 
-  const categoryName = watch("name");
-
   // ✨ Daftar emoji icon kategori dengan kategori
   const emojiCategories = [
     {
-      title: "TECH & ELECTRONICS",
-      emojis: ["📱", "💻", "⌚", "🎧", "📷", "🖥️"]
+      title: "GAME PLATFORM KEYS",
+      emojis: ["🎮", "🖥️", "💻", "🕹️", "🟦", "🟩"], // Steam, PC, PS, Xbox
     },
     {
-      title: "FASHION & BEAUTY",
-      emojis: ["👕", "👗", "👠", "💄", "💅", "👜"]
+      title: "GAME GENRES",
+      emojis: ["⚔️", "🏹", "🧩", "🎲", "🏆", "🧟"], // RPG, Action, Puzzle, Strategy
     },
     {
-      title: "HOME & LIVING",
-      emojis: ["🏠", "🪑", "🛋️", "🛏️", "📦", "🪴"]
+      title: "DIGITAL CODES & LICENSES",
+      emojis: ["🔑", "💻", "🛡️", "📦", "🧾", "📄"], // Windows key, Office, Antivirus, utility tools
     },
     {
-      title: "FOOD & DRINKS",
-      emojis: ["🍔", "🍕", "☕", "🍰", "🍜", "🥗"]
+      title: "TOP-UP & VOUCHER",
+      emojis: ["💎", "💳", "🎟️", "🪙", "⭐", "🛒"], // Wallet top-up, voucher game, credit
     },
     {
-      title: "ENTERTAINMENT",
-      emojis: ["🎮", "🎬", "🎵", "🎨", "📚", "🎭"]
+      title: "SUBSCRIPTIONS",
+      emojis: ["📅", "⏳", "💼", "🎧", "📺", "🌐"], // Netflix, Spotify, VPN, PS Plus, Game Pass
     },
     {
-      title: "SPORTS & FITNESS",
-      emojis: ["⚽", "🏋️", "🏃", "🚴", "⛹️", "🧘"]
+      title: "MISCELLANEOUS",
+      emojis: ["🚀", "✨", "🔥", "⭐", "🎁", "🛠️"], // Promo, bundle, special items
     },
-    {
-      title: "OTHERS",
-      emojis: ["🐶", "🚗", "🧸", "🌿", "✈️", "🎁"]
-    }
   ];
 
   const handleClose = useCallback(() => {
@@ -130,7 +130,11 @@ export default function CategoryFormModal({
       handleClose();
     } catch (err) {
       console.error(err);
-      setErrorMessage(err instanceof Error ? err.message : "Failed to create category. Please try again.");
+      setErrorMessage(
+        err instanceof Error
+          ? err.message
+          : "Failed to create category. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -170,7 +174,10 @@ export default function CategoryFormModal({
 
           {/* Category Name */}
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-semibold text-foreground">
+            <Label
+              htmlFor="name"
+              className="text-sm font-semibold text-foreground"
+            >
               Category Name
             </Label>
             <Input
@@ -179,7 +186,9 @@ export default function CategoryFormModal({
               {...register("name")}
               className={cn(
                 "h-11 border-2 transition-all",
-                errors.name ? "border-red-400 dark:border-red-600" : "border-input"
+                errors.name
+                  ? "border-red-400 dark:border-red-600"
+                  : "border-input"
               )}
               autoFocus
             />
@@ -196,7 +205,7 @@ export default function CategoryFormModal({
             <Label className="text-sm font-semibold text-foreground">
               Select Icon
             </Label>
-            
+
             <div className="space-y-5">
               {emojiCategories.map((category) => (
                 <div key={category.title} className="space-y-2.5">
@@ -233,7 +242,7 @@ export default function CategoryFormModal({
                 </div>
               ))}
             </div>
-            
+
             {errors.iconEmoji && (
               <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
                 <AlertTriangle className="w-3.5 h-3.5" />
@@ -245,24 +254,24 @@ export default function CategoryFormModal({
 
         {/* Fixed Footer */}
         <DialogFooter className="px-6 py-4 border-t border-border bg-muted/50  flex-row justify-end gap-2 sm:gap-2">
-          <Button 
-            type="button" 
-            variant="outline" 
+          <Button
+            type="button"
+            variant="outline"
             onClick={handleClose}
             className="border-2"
             disabled={loading}
           >
             Cancel
           </Button>
-          <Button 
-            type="button" 
-            onClick={handleSubmit(onSubmit)} 
+          <Button
+            type="button"
+            onClick={handleSubmit(onSubmit)}
             disabled={loading}
             className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600 text-white font-semibold shadow-md hover:shadow-lg transition-all"
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creating...
               </>
             ) : (

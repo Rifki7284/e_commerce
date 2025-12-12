@@ -231,7 +231,7 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={handleClose}>
+        <Dialog open={isOpen} onOpenChange={handleClose} >
             <DialogContent className="sm:max-w-2xl p-0 gap-0 max-h-[95vh] flex flex-col">
                 {/* Fixed Header */}
                 <DialogHeader className="px-6 py-5 border-b border-border bg-background sticky top-0 z-10">
@@ -276,8 +276,8 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
                                 onChange={handleChange}
                                 placeholder="Enter product name"
                                 required
-                                className="h-11 border-2"
-                                autoFocus
+
+                                className="h-11 border-2 focus:outline-none focus:ring-0"
                             />
                         </div>
 

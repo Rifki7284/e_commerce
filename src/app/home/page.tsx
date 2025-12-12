@@ -64,9 +64,7 @@ export default async function HomePage({
   const res = await fetch(`${baseUrl}/api/products?page=${page}&perPage=${perPage}`, {
     cache: "no-store",
   });
-
   const data = await res.json();
-
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
       <ClientHeader />

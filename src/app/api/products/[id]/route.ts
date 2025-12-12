@@ -3,10 +3,15 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { writeFile } from "fs/promises";
+import { auth } from "@/lib/auth";
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  if (!session || session.user?.role !== "Admin") {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
   const { id } = await params;
   try {
     const product = await prisma.product.delete({
@@ -23,9 +28,15 @@ export async function DELETE(
   }
 }
 
-
-export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const session = await auth();
+    if (!session || session.user?.role !== "Admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     const { id } = await params;
     const formData = await req.formData();
 
@@ -54,8 +65,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     }
 
     // Parse image data
-    const existingImages = JSON.parse(formData.get("existingImages") as string || "[]") as string[];
-    const deletedImages = JSON.parse(formData.get("deletedImages") as string || "[]") as string[];
+    const existingImages = JSON.parse(
+      (formData.get("existingImages") as string) || "[]"
+    ) as string[];
+    const deletedImages = JSON.parse(
+      (formData.get("deletedImages") as string) || "[]"
+    ) as string[];
     const newImages = formData.getAll("newImages[]") as File[];
 
     const productId = parseInt(id, 10);
@@ -70,7 +85,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     // 🔹 2️⃣ Setelah itu baru hapus file-nya dari folder
     for (const url of deletedImages) {
       try {
-        const filePath = path.join(process.cwd(), "public", url.replace(/^\/+/, ""));
+        const filePath = path.join(
+          process.cwd(),
+          "public",
+          url.replace(/^\/+/, "")
+        );
         const uploadsPath = path.join(process.cwd(), "public", "uploads");
 
         if (filePath.startsWith(uploadsPath)) {

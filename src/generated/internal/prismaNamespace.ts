@@ -394,7 +394,8 @@ export const ModelName = {
   Session: 'Session',
   VerificationToken: 'VerificationToken',
   Order: 'Order',
-  OrderItem: 'OrderItem'
+  OrderItem: 'OrderItem',
+  GameKey: 'GameKey'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "product" | "review" | "category" | "productImage" | "cartItem" | "account" | "session" | "verificationToken" | "order" | "orderItem"
+    modelProps: "user" | "product" | "review" | "category" | "productImage" | "cartItem" | "account" | "session" | "verificationToken" | "order" | "orderItem" | "gameKey"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1228,6 +1229,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    GameKey: {
+      payload: Prisma.$GameKeyPayload<ExtArgs>
+      fields: Prisma.GameKeyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GameKeyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GameKeyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>
+        }
+        findFirst: {
+          args: Prisma.GameKeyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GameKeyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>
+        }
+        findMany: {
+          args: Prisma.GameKeyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>[]
+        }
+        create: {
+          args: Prisma.GameKeyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>
+        }
+        createMany: {
+          args: Prisma.GameKeyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GameKeyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>[]
+        }
+        delete: {
+          args: Prisma.GameKeyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>
+        }
+        update: {
+          args: Prisma.GameKeyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>
+        }
+        deleteMany: {
+          args: Prisma.GameKeyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GameKeyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GameKeyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>[]
+        }
+        upsert: {
+          args: Prisma.GameKeyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GameKeyPayload>
+        }
+        aggregate: {
+          args: Prisma.GameKeyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGameKey>
+        }
+        groupBy: {
+          args: Prisma.GameKeyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GameKeyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GameKeyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GameKeyCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1392,10 +1467,23 @@ export const OrderItemScalarFieldEnum = {
   orderId: 'orderId',
   productId: 'productId',
   quantity: 'quantity',
-  price: 'price'
+  price: 'price',
+  gameKeyId: 'gameKeyId'
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
+
+
+export const GameKeyScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  productId: 'productId',
+  status: 'status',
+  createdAt: 'createdAt',
+  soldAt: 'soldAt'
+} as const
+
+export type GameKeyScalarFieldEnum = (typeof GameKeyScalarFieldEnum)[keyof typeof GameKeyScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1497,6 +1585,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
+
+/**
+ * Reference to a field of type 'KeyStatus'
+ */
+export type EnumKeyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'KeyStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'KeyStatus[]'
+ */
+export type ListEnumKeyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'KeyStatus[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1587,6 +1689,7 @@ export type GlobalOmitConfig = {
   verificationToken?: Prisma.VerificationTokenOmit
   order?: Prisma.OrderOmit
   orderItem?: Prisma.OrderItemOmit
+  gameKey?: Prisma.GameKeyOmit
 }
 
 /* Types for Logging */

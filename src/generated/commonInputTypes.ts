@@ -233,6 +233,23 @@ export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
 }
 
+export type EnumKeyStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.KeyStatus | Prisma.EnumKeyStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.KeyStatus[] | Prisma.ListEnumKeyStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.KeyStatus[] | Prisma.ListEnumKeyStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumKeyStatusFilter<$PrismaModel> | $Enums.KeyStatus
+}
+
+export type EnumKeyStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.KeyStatus | Prisma.EnumKeyStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.KeyStatus[] | Prisma.ListEnumKeyStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.KeyStatus[] | Prisma.ListEnumKeyStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumKeyStatusWithAggregatesFilter<$PrismaModel> | $Enums.KeyStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumKeyStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumKeyStatusFilter<$PrismaModel>
+}
+
 export type NestedIntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -452,6 +469,23 @@ export type NestedFloatNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
+}
+
+export type NestedEnumKeyStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.KeyStatus | Prisma.EnumKeyStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.KeyStatus[] | Prisma.ListEnumKeyStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.KeyStatus[] | Prisma.ListEnumKeyStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumKeyStatusFilter<$PrismaModel> | $Enums.KeyStatus
+}
+
+export type NestedEnumKeyStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.KeyStatus | Prisma.EnumKeyStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.KeyStatus[] | Prisma.ListEnumKeyStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.KeyStatus[] | Prisma.ListEnumKeyStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumKeyStatusWithAggregatesFilter<$PrismaModel> | $Enums.KeyStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumKeyStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumKeyStatusFilter<$PrismaModel>
 }
 
 

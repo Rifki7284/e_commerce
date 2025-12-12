@@ -1,20 +1,18 @@
 import { NextResponse } from "next/server";
 import midtransClient from "midtrans-client";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 
 // Waktu kadaluarsa pending order dalam milidetik (5 jam)
 const PENDING_EXPIRE = 5 * 60 * 60 * 1000;
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const session = await auth();
+    if (!session || session.user?.role === "Admin") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-
-    const userId = Number(session.user.id);
+    const userId = Number(session?.user.id);
     const { items, total } = await req.json();
 
     if (!items || items.length === 0) {
@@ -41,7 +39,7 @@ export async function POST(req: Request) {
         userId,
         totalAmount: total,
         status: "pending",
-        paymentMethod:"",
+        paymentMethod: "",
         orderItems: {
           create: items.map((item: any) => ({
             productId: item.id,
@@ -103,8 +101,8 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const session = await auth();
+    if (!session || session.user?.role === "Admin") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -128,10 +126,13 @@ export async function GET() {
       include: { orderItems: true },
     });
 
-    return NextResponse.json({
-      cartItems,
-      validOrders,
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        cartItems,
+        validOrders,
+      },
+      { status: 200 }
+    );
   } catch (error: any) {
     console.error("❌ Error getting cart items/orders:", error);
     return NextResponse.json(

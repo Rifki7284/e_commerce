@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -7,6 +8,10 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
+    const session = await auth();
+    if (!session || session.user?.role! !== "Admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     const category = await prisma.category.delete({
       where: {
         id: Number(id),
@@ -20,14 +25,21 @@ export async function DELETE(
     );
   }
 }
-export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const session = await auth();
+    if (!session || session.user?.role! !== "Admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     const { id } = await params;
     const catId = parseInt(id, 10);
     const formData = await req.formData();
-    const name = formData.get("name") as string
-    const iconName = formData.get("iconName") as string
-    const slug = formData.get("slug") as string
+    const name = formData.get("name") as string;
+    const iconName = formData.get("iconName") as string;
+    const slug = formData.get("slug") as string;
     const category = await prisma.category.update({
       where: { id: catId },
       data: {
@@ -38,11 +50,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     });
     return NextResponse.json({
       success: true,
-      category: category
+      category: category,
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
-    return Response.json({ success: false, message: "Failed to create category" }, { status: 500 });
+    return Response.json(
+      { success: false, message: "Failed to create category" },
+      { status: 500 }
+    );
   }
 }

@@ -72,3 +72,8 @@ export type Order = Prisma.OrderModel
  * 
  */
 export type OrderItem = Prisma.OrderItemModel
+/**
+ * Model GameKey
+ * 
+ */
+export type GameKey = Prisma.GameKeyModel

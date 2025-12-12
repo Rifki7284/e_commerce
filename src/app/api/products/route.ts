@@ -3,14 +3,15 @@ import fs from "fs";
 import path from "path";
 import { writeFile } from "fs/promises";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
     const count = await prisma.product.count();
     const page = Number(searchParams.get("page"));
     const perPage = Number(searchParams.get("perPage"));
-    const search = searchParams.get("search")
-    const category = searchParams.get("category")
+    const search = searchParams.get("search");
+    const category = searchParams.get("category");
     const minPriceParam = searchParams.get("minPrice");
     const maxPriceParam = searchParams.get("maxPrice");
 
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
         orderBy = { price: "desc" };
         break;
       case "rating":
-        orderBy = null; 
+        orderBy = null;
         break;
       default:
         orderBy = { id: "asc" };
@@ -54,13 +55,15 @@ export async function GET(req: NextRequest) {
         take: perPage,
       });
 
-      const sortedIds = ratingData.map((r: { productId: any; }) => r.productId);
+      const sortedIds = ratingData.map((r: { productId: any }) => r.productId);
 
       const products = await prisma.product.findMany({
         where: {
           id: { in: sortedIds },
           ...(category ? { categoryId: Number(category) } : {}),
-          ...(minPrice !== null || maxPrice !== null ? { price: priceFilter } : {}),
+          ...(minPrice !== null || maxPrice !== null
+            ? { price: priceFilter }
+            : {}),
           OR: [
             { name: { contains: search || "", mode: "insensitive" } },
             { description: { contains: search || "", mode: "insensitive" } },
@@ -78,21 +81,26 @@ export async function GET(req: NextRequest) {
       });
 
       const finalSorted = sortedIds
-        .map((id: any) => products.find((p: { id: any; }) => p.id === id))
+        .map((id: any) => products.find((p: { id: any }) => p.id === id))
         .filter(Boolean);
 
-      return NextResponse.json({
-        product: finalSorted,
-        count: count,
-        page: page,
-      }, { status: 200 });
+      return NextResponse.json(
+        {
+          product: finalSorted,
+          count: count,
+          page: page,
+        },
+        { status: 200 }
+      );
     }
     if (page == 1) {
       const products = await prisma.product.findMany({
         take: perPage,
         where: {
           ...(category ? { categoryId: Number(category) } : {}),
-          ...(minPrice !== null || maxPrice !== null ? { price: priceFilter } : {}),
+          ...(minPrice !== null || maxPrice !== null
+            ? { price: priceFilter }
+            : {}),
           OR: [
             { name: { contains: search || "", mode: "insensitive" } },
             { description: { contains: search || "", mode: "insensitive" } },
@@ -115,11 +123,14 @@ export async function GET(req: NextRequest) {
           },
         },
       });
-      return NextResponse.json({
-        product: products,
-        count: count,
-        page: page,
-      }, { status: 200 });
+      return NextResponse.json(
+        {
+          product: products,
+          count: count,
+          page: page,
+        },
+        { status: 200 }
+      );
     } else {
       const skip = (page - 1) * perPage;
       const products = await prisma.product.findMany({
@@ -127,7 +138,9 @@ export async function GET(req: NextRequest) {
         take: perPage,
         where: {
           ...(category ? { categoryId: Number(category) } : {}),
-          ...(minPrice !== null || maxPrice !== null ? { price: priceFilter } : {}),
+          ...(minPrice !== null || maxPrice !== null
+            ? { price: priceFilter }
+            : {}),
           OR: [
             { name: { contains: search || "", mode: "insensitive" } },
             { description: { contains: search || "", mode: "insensitive" } },
@@ -150,30 +163,40 @@ export async function GET(req: NextRequest) {
           },
         },
       });
-      return NextResponse.json({
-        product: products,
-        skip: skip,
-        count: count,
-        page: page,
-      }, { status: 200 });
+      return NextResponse.json(
+        {
+          product: products,
+          skip: skip,
+          count: count,
+          page: page,
+        },
+        { status: 200 }
+      );
     }
-  }
-  catch (e) {
-    return NextResponse.json({
-      message: e
-    }, { status: 500 })
+  } catch (e) {
+    return NextResponse.json(
+      {
+        message: e,
+      },
+      { status: 500 }
+    );
   }
 }
 
 // POST create new product
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    if (!session || session.user?.role !== "Admin") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     const formData = await req.formData();
 
     const name = formData.get("name") as string;
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
     const slug = formData.get("slug") as string;
+    const code = formData.get("code") as string;
     const stock = parseInt(formData.get("stock") as string, 10);
     const categoryIdRaw = formData.get("categoryId");
 
@@ -183,7 +206,13 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
+    const existing = await prisma.product.findFirst({ where: { slug: slug } });
+    if (existing) {
+      return NextResponse.json(
+        { error: "Slug already exists" },
+        { status: 400 }
+      );
+    }
     const categoryId = Number(categoryIdRaw);
     if (isNaN(categoryId)) {
       return NextResponse.json(
@@ -231,8 +260,17 @@ export async function POST(req: Request) {
       },
       include: { images: true },
     });
-
-    return NextResponse.json(product, { status: 200 });
+    await prisma.gameKey.create({
+      data: {
+        code,
+        productId: product.id,
+        status: "Available",
+      },
+    });
+    return NextResponse.json(
+      { res: "Data berhasil ditambahkan" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(
