@@ -1,13 +1,23 @@
-
-import { ShoppingCart, Download, Key, Zap, TrendingUp, Award, Shield } from "lucide-react"
-import Link from "next/link"
-import ClientHeader from "@/components/client/client-header"
-import ProductGrid from "@/components/product/product-grid"
-import { Suspense } from "react"
-import ProductSkeleton from "@/components/product/product-skeleton"
-import { Metadata } from "next"
+import {
+  ShoppingCart,
+  Download,
+  Key,
+  Zap,
+  TrendingUp,
+  Award,
+  Shield,
+} from "lucide-react";
+import Link from "next/link";
+import ClientHeader from "@/components/client/client-header";
+import ProductGrid from "@/components/product/product-grid";
+import { Suspense } from "react";
+import ProductSkeleton from "@/components/product/product-skeleton";
+import { Metadata } from "next";
+import { auth } from "@/lib/auth";
+import PopularCategories from "@/components/category/popular-categories";
 export const metadata: Metadata = {
-  title: "GameKeys Indonesia – Steam Key Murah, Game Original, Gift Card & Top Up",
+  title:
+    "GameKeys Indonesia – Steam Key Murah, Game Original, Gift Card & Top Up",
   description:
     "GameKeys Indonesia adalah tempat terbaik untuk membeli game original, Steam Key, Origin, Ubisoft, Epic Games, PlayStation, Xbox, dan Nintendo. Harga murah, pengiriman instan, 100% legal & terpercaya.",
   keywords: [
@@ -20,7 +30,7 @@ export const metadata: Metadata = {
     "top up game",
     "origin key",
     "ubisoft key",
-    "gamekeys"
+    "gamekeys",
   ],
   openGraph: {
     title: "GameKeys Indonesia – Steam Key, Game Original & Gift Card Termurah",
@@ -46,10 +56,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
       "max-image-preview": "large",
       "max-video-preview": -1,
-    }
-  }
-}
-
+    },
+  },
+};
 
 export default async function HomePage({
   searchParams,
@@ -57,14 +66,24 @@ export default async function HomePage({
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const params = await searchParams
+  const params = await searchParams;
   const page = params?.page ?? "1";
   const perPage = "8";
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const res = await fetch(`${baseUrl}/api/products?page=${page}&perPage=${perPage}`, {
+  const res = await fetch(
+    `${baseUrl}/api/products?page=${page}&perPage=${perPage}`,
+    {
+      cache: "no-store",
+    }
+  );
+  const data = await res.json();
+
+  const category = await fetch(`${baseUrl}/api/category/popular`, {
     cache: "no-store",
   });
-  const data = await res.json();
+  const dataCategory = await category.json();
+  const session = await auth();
+  console.log(session);
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
       <ClientHeader />
@@ -72,7 +91,7 @@ export default async function HomePage({
       {/* Hero Banner with Promotion */}
       <section className="relative overflow-hidden border-b border-slate-700">
         {/* Animated Background */}
-        
+
         <div className="absolute inset-0 bg-linear-to-br from-blue-900/30 via-purple-900/30 to-slate-900/30"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzIyMiIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
 
@@ -80,7 +99,9 @@ export default async function HomePage({
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-orange-500/20 to-red-500/20 backdrop-blur-sm border border-orange-500/30 rounded-full mb-6">
               <Zap size={16} className="text-orange-400" />
-              <span className="text-orange-300 text-sm font-bold uppercase tracking-wide">Flash Sale - Up to 70% Off</span>
+              <span className="text-orange-300 text-sm font-bold uppercase tracking-wide">
+                Flash Sale - Up to 70% Off
+              </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
               <span className="bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -90,8 +111,12 @@ export default async function HomePage({
               Instant Delivery
             </h1>
             <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              Get your favorite PC games, Steam keys, gift cards, and software instantly.
-              <span className="text-blue-400 font-semibold"> Safe, fast, and affordable.</span>
+              Get your favorite PC games, Steam keys, gift cards, and software
+              instantly.
+              <span className="text-blue-400 font-semibold">
+                {" "}
+                Safe, fast, and affordable.
+              </span>
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
@@ -122,12 +147,31 @@ export default async function HomePage({
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: Download, text: "Instant Delivery", subtext: "Get keys immediately" },
-              { icon: Shield, text: "100% Secure", subtext: "Safe transactions" },
-              { icon: Award, text: "Official Keys", subtext: "Authorized reseller" },
-              { icon: TrendingUp, text: "Best Prices", subtext: "Guaranteed lowest" }
+              {
+                icon: Download,
+                text: "Instant Delivery",
+                subtext: "Get keys immediately",
+              },
+              {
+                icon: Shield,
+                text: "100% Secure",
+                subtext: "Safe transactions",
+              },
+              {
+                icon: Award,
+                text: "Official Keys",
+                subtext: "Authorized reseller",
+              },
+              {
+                icon: TrendingUp,
+                text: "Best Prices",
+                subtext: "Guaranteed lowest",
+              },
             ].map((item, index) => (
-              <div key={index} className="flex flex-col items-center text-center group">
+              <div
+                key={index}
+                className="flex flex-col items-center text-center group"
+              >
                 <div className="w-12 h-12 bg-linear-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-blue-500/30">
                   <item.icon size={24} className="text-blue-400" />
                 </div>
@@ -146,7 +190,9 @@ export default async function HomePage({
             <div className="w-1 h-8 bg-linear-to-b from-blue-500 to-purple-600 rounded-full"></div>
             <h2 className="text-4xl font-black text-white">Featured Games</h2>
           </div>
-          <p className="text-slate-400 text-lg">Handpicked digital products just for you</p>
+          <p className="text-slate-400 text-lg">
+            Handpicked digital products just for you
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -162,56 +208,28 @@ export default async function HomePage({
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-8 bg-linear-to-b from-purple-500 to-pink-600 rounded-full"></div>
-              <h2 className="text-4xl font-black text-white">Popular Categories</h2>
+              <h2 className="text-4xl font-black text-white">
+                Popular Categories
+              </h2>
             </div>
-            <p className="text-slate-400 text-lg">Explore our digital product collections</p>
+            <p className="text-slate-400 text-lg">
+              Explore our digital product collections
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "PC Games",
-                icon: "🎮",
-                gradient: "from-blue-500/20 to-cyan-500/20",
-                border: "border-blue-500/30",
-                hover: "hover:border-blue-500/60"
-              },
-              {
-                name: "Gift Cards",
-                icon: "🎁",
-                gradient: "from-purple-500/20 to-pink-500/20",
-                border: "border-purple-500/30",
-                hover: "hover:border-purple-500/60"
-              },
-              {
-                name: "Software",
-                icon: "💻",
-                gradient: "from-orange-500/20 to-red-500/20",
-                border: "border-orange-500/30",
-                hover: "hover:border-orange-500/60"
-              },
-            ].map((category) => (
-              <Link
-                key={category.name}
-                href={`/product?category=${category.name.toLowerCase()}`}
-                className={`bg-linear-to-br ${category.gradient} backdrop-blur-sm border ${category.border} ${category.hover} rounded-xl p-8 text-center hover:shadow-xl transition-all group cursor-pointer`}
-              >
-                <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
-                  {category.icon}
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">{category.name}</h3>
-                <p className="text-slate-400 text-sm">Browse collection →</p>
-              </Link>
-            ))}
-          </div>
+          <PopularCategories categories={dataCategory.data} />
         </div>
       </section>
 
       {/* Why Choose Us */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-black text-white mb-4">Why Choose GameKeys?</h2>
-          <p className="text-slate-400 text-lg">Your trusted digital marketplace</p>
+          <h2 className="text-4xl font-black text-white mb-4">
+            Why Choose GameKeys?
+          </h2>
+          <p className="text-slate-400 text-lg">
+            Your trusted digital marketplace
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -219,23 +237,25 @@ export default async function HomePage({
             {
               icon: Download,
               title: "Instant Delivery",
-              description: "Get your digital keys within seconds of purchase"
+              description: "Get your digital keys within seconds of purchase",
             },
             {
               icon: Shield,
               title: "100% Secure",
-              description: "Encrypted transactions and verified payment methods"
+              description:
+                "Encrypted transactions and verified payment methods",
             },
             {
               icon: Award,
               title: "Official Products",
-              description: "All keys are sourced from authorized distributors"
+              description: "All keys are sourced from authorized distributors",
             },
             {
               icon: TrendingUp,
               title: "Best Prices",
-              description: "Competitive pricing with regular discounts and deals"
-            }
+              description:
+                "Competitive pricing with regular discounts and deals",
+            },
           ].map((feature, index) => (
             <div
               key={index}
@@ -244,12 +264,14 @@ export default async function HomePage({
               <div className="w-14 h-14 bg-linear-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-blue-500/30">
                 <feature.icon size={28} className="text-blue-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
+              <h3 className="text-xl font-bold text-white mb-2">
+                {feature.title}
+              </h3>
               <p className="text-slate-400 text-sm">{feature.description}</p>
             </div>
           ))}
         </div>
       </section>
     </div>
-  )
+  );
 }

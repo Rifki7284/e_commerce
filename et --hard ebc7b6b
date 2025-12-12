@@ -1,0 +1,19 @@
+[33mc7ae791[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: commit: feat: implement keys CRUD and migrate NextAuth to v5
+[33me1c7770[m HEAD@{1}: reset: moving to e1c7770
+[33mebc7b6b[m HEAD@{2}: commit: feat: implement keys CRUD and migrate NextAuth to v5
+[33me1c7770[m HEAD@{3}: reset: moving to HEAD~1
+[33mddc1aed[m HEAD@{4}: commit: fix: update after reinstall windows
+[33me1c7770[m HEAD@{5}: commit: feat: migrasi halaman home dan pencarian produk ke SSR serta penambahan SEO
+[33mce0f550[m HEAD@{6}: commit: fix(prisma): update all API imports to Prisma 7 compatible client
+[33m87aca7f[m HEAD@{7}: commit: fix(prisma): update schema syntax after Prisma 7 upgrade
+[33ma4584a6[m HEAD@{8}: commit: chore(deps): update prisma to latest version
+[33m61299c5[m HEAD@{9}: commit: update:theme client
+[33me3eab8c[m HEAD@{10}: commit: feat:dashboard
+[33me3de4a1[m HEAD@{11}: commit: feat:detail order
+[33mb6369b4[m HEAD@{12}: commit: feat:transaction history
+[33m76b562b[m HEAD@{13}: commit: feat:filter product,product page
+[33m43c773b[m HEAD@{14}: commit: feat:review
+[33mf976fe4[m HEAD@{15}: commit: feat:edit category and product
+[33m054a46c[m HEAD@{16}: commit: feat: add theme, category & product (add, read, delete), and responsive layout
+[33m6089cc8[m HEAD@{17}: Branch: renamed refs/heads/master to refs/heads/main
+[33m6089cc8[m HEAD@{19}: commit (initial): Initial commit from Create Next App

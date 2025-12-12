@@ -4,8 +4,6 @@ import { auth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-
-  // Auth
   const session = await auth();
   if (!session || session.user?.role !== "Admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -76,20 +74,36 @@ export async function POST(req: NextRequest) {
     if (!session || session.user?.role !== "Admin") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+
     const formData = await req.formData();
     const code = formData.get("keys") as string;
     const productId = Number(formData.get("productId"));
-    await prisma.gameKey.create({
-      data: {
-        code,
-        productId,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.gameKey.create({
+        data: {
+          code,
+          productId,
+        },
+      });
+      await tx.product.update({
+        where: { id: productId },
+        data: {
+          stock: {
+            increment: 1,
+          },
+        },
+      });
     });
+  
     return NextResponse.json(
-      { message: "Data berhasil ditambahkan" },
+      { message: "Key berhasil ditambahkan dan stok diperbarui" },
       { status: 200 }
     );
-  } catch (e) {
-    return NextResponse.json({ message: e }, { status: 500 });
+  } catch (e: any) {
+    console.error(e);
+    return NextResponse.json(
+      { message: e?.message || "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

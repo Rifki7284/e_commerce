@@ -59,7 +59,9 @@ export async function POST(req: Request) {
 
     const parameter = {
       transaction_details: {
-        order_id: `ORDER-${order.id}`,
+        order_id: `ORDER-${order.id}-${Math.random()
+          .toString(36)
+          .substring(2, 8)}`,
         gross_amount: total,
       },
       item_details: items.map((item: any) => ({
@@ -81,7 +83,9 @@ export async function POST(req: Request) {
       where: { id: order.id },
       data: {
         snapToken: transaction.token,
-        transactionId: `ORDER-${order.id}`,
+        transactionId: `ORDER-${order.id}-${Math.random()
+          .toString(36)
+          .substring(2, 8)}`,
       },
     });
 

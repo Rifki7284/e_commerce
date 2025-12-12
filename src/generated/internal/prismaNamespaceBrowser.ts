@@ -61,6 +61,7 @@ export const ModelName = {
   Session: 'Session',
   VerificationToken: 'VerificationToken',
   Order: 'Order',
+  OrderItemKey: 'OrderItemKey',
   OrderItem: 'OrderItem',
   GameKey: 'GameKey'
 } as const
@@ -201,13 +202,21 @@ export const OrderScalarFieldEnum = {
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+export const OrderItemKeyScalarFieldEnum = {
+  id: 'id',
+  orderItemId: 'orderItemId',
+  gameKeyId: 'gameKeyId'
+} as const
+
+export type OrderItemKeyScalarFieldEnum = (typeof OrderItemKeyScalarFieldEnum)[keyof typeof OrderItemKeyScalarFieldEnum]
+
+
 export const OrderItemScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
   productId: 'productId',
   quantity: 'quantity',
-  price: 'price',
-  gameKeyId: 'gameKeyId'
+  price: 'price'
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]

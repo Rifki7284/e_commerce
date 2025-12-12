@@ -90,12 +90,14 @@ export async function POST(req: Request) {
             data: {
               status: "Sold",
               soldAt: new Date(),
-              orderItem: {
-                connect: { id: item.id },
-              },
             },
           });
-
+          await prisma.orderItemKey.create({
+            data: {
+              orderItemId: item.id,
+              gameKeyId: key.id,
+            },
+          });
           console.log(`🔑 Assigned key ${key.code} to orderItem ${item.id}`);
         }
         console.log(

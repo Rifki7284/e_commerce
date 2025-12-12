@@ -228,7 +228,7 @@ export type GameKeyWhereInput = {
   status?: Prisma.EnumKeyStatusFilter<"GameKey"> | $Enums.KeyStatus
   createdAt?: Prisma.DateTimeFilter<"GameKey"> | Date | string
   soldAt?: Prisma.DateTimeNullableFilter<"GameKey"> | Date | string | null
-  orderItem?: Prisma.XOR<Prisma.OrderItemNullableScalarRelationFilter, Prisma.OrderItemWhereInput> | null
+  orderKeys?: Prisma.OrderItemKeyListRelationFilter
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }
 
@@ -239,7 +239,7 @@ export type GameKeyOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   soldAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  orderItem?: Prisma.OrderItemOrderByWithRelationInput
+  orderKeys?: Prisma.OrderItemKeyOrderByRelationAggregateInput
   product?: Prisma.ProductOrderByWithRelationInput
 }
 
@@ -253,7 +253,7 @@ export type GameKeyWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumKeyStatusFilter<"GameKey"> | $Enums.KeyStatus
   createdAt?: Prisma.DateTimeFilter<"GameKey"> | Date | string
   soldAt?: Prisma.DateTimeNullableFilter<"GameKey"> | Date | string | null
-  orderItem?: Prisma.XOR<Prisma.OrderItemNullableScalarRelationFilter, Prisma.OrderItemWhereInput> | null
+  orderKeys?: Prisma.OrderItemKeyListRelationFilter
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }, "id" | "code">
 
@@ -288,7 +288,7 @@ export type GameKeyCreateInput = {
   status?: $Enums.KeyStatus
   createdAt?: Date | string
   soldAt?: Date | string | null
-  orderItem?: Prisma.OrderItemCreateNestedOneWithoutGameKeyInput
+  orderKeys?: Prisma.OrderItemKeyCreateNestedManyWithoutGameKeyInput
   product: Prisma.ProductCreateNestedOneWithoutGameKeysInput
 }
 
@@ -299,7 +299,7 @@ export type GameKeyUncheckedCreateInput = {
   status?: $Enums.KeyStatus
   createdAt?: Date | string
   soldAt?: Date | string | null
-  orderItem?: Prisma.OrderItemUncheckedCreateNestedOneWithoutGameKeyInput
+  orderKeys?: Prisma.OrderItemKeyUncheckedCreateNestedManyWithoutGameKeyInput
 }
 
 export type GameKeyUpdateInput = {
@@ -307,7 +307,7 @@ export type GameKeyUpdateInput = {
   status?: Prisma.EnumKeyStatusFieldUpdateOperationsInput | $Enums.KeyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   soldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  orderItem?: Prisma.OrderItemUpdateOneWithoutGameKeyNestedInput
+  orderKeys?: Prisma.OrderItemKeyUpdateManyWithoutGameKeyNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutGameKeysNestedInput
 }
 
@@ -318,7 +318,7 @@ export type GameKeyUncheckedUpdateInput = {
   status?: Prisma.EnumKeyStatusFieldUpdateOperationsInput | $Enums.KeyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   soldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  orderItem?: Prisma.OrderItemUncheckedUpdateOneWithoutGameKeyNestedInput
+  orderKeys?: Prisma.OrderItemKeyUncheckedUpdateManyWithoutGameKeyNestedInput
 }
 
 export type GameKeyCreateManyInput = {
@@ -356,9 +356,9 @@ export type GameKeyOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type GameKeyNullableScalarRelationFilter = {
-  is?: Prisma.GameKeyWhereInput | null
-  isNot?: Prisma.GameKeyWhereInput | null
+export type GameKeyScalarRelationFilter = {
+  is?: Prisma.GameKeyWhereInput
+  isNot?: Prisma.GameKeyWhereInput
 }
 
 export type GameKeyCountOrderByAggregateInput = {
@@ -440,20 +440,18 @@ export type GameKeyUncheckedUpdateManyWithoutProductNestedInput = {
   deleteMany?: Prisma.GameKeyScalarWhereInput | Prisma.GameKeyScalarWhereInput[]
 }
 
-export type GameKeyCreateNestedOneWithoutOrderItemInput = {
-  create?: Prisma.XOR<Prisma.GameKeyCreateWithoutOrderItemInput, Prisma.GameKeyUncheckedCreateWithoutOrderItemInput>
-  connectOrCreate?: Prisma.GameKeyCreateOrConnectWithoutOrderItemInput
+export type GameKeyCreateNestedOneWithoutOrderKeysInput = {
+  create?: Prisma.XOR<Prisma.GameKeyCreateWithoutOrderKeysInput, Prisma.GameKeyUncheckedCreateWithoutOrderKeysInput>
+  connectOrCreate?: Prisma.GameKeyCreateOrConnectWithoutOrderKeysInput
   connect?: Prisma.GameKeyWhereUniqueInput
 }
 
-export type GameKeyUpdateOneWithoutOrderItemNestedInput = {
-  create?: Prisma.XOR<Prisma.GameKeyCreateWithoutOrderItemInput, Prisma.GameKeyUncheckedCreateWithoutOrderItemInput>
-  connectOrCreate?: Prisma.GameKeyCreateOrConnectWithoutOrderItemInput
-  upsert?: Prisma.GameKeyUpsertWithoutOrderItemInput
-  disconnect?: Prisma.GameKeyWhereInput | boolean
-  delete?: Prisma.GameKeyWhereInput | boolean
+export type GameKeyUpdateOneRequiredWithoutOrderKeysNestedInput = {
+  create?: Prisma.XOR<Prisma.GameKeyCreateWithoutOrderKeysInput, Prisma.GameKeyUncheckedCreateWithoutOrderKeysInput>
+  connectOrCreate?: Prisma.GameKeyCreateOrConnectWithoutOrderKeysInput
+  upsert?: Prisma.GameKeyUpsertWithoutOrderKeysInput
   connect?: Prisma.GameKeyWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GameKeyUpdateToOneWithWhereWithoutOrderItemInput, Prisma.GameKeyUpdateWithoutOrderItemInput>, Prisma.GameKeyUncheckedUpdateWithoutOrderItemInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GameKeyUpdateToOneWithWhereWithoutOrderKeysInput, Prisma.GameKeyUpdateWithoutOrderKeysInput>, Prisma.GameKeyUncheckedUpdateWithoutOrderKeysInput>
 }
 
 export type EnumKeyStatusFieldUpdateOperationsInput = {
@@ -465,7 +463,7 @@ export type GameKeyCreateWithoutProductInput = {
   status?: $Enums.KeyStatus
   createdAt?: Date | string
   soldAt?: Date | string | null
-  orderItem?: Prisma.OrderItemCreateNestedOneWithoutGameKeyInput
+  orderKeys?: Prisma.OrderItemKeyCreateNestedManyWithoutGameKeyInput
 }
 
 export type GameKeyUncheckedCreateWithoutProductInput = {
@@ -474,7 +472,7 @@ export type GameKeyUncheckedCreateWithoutProductInput = {
   status?: $Enums.KeyStatus
   createdAt?: Date | string
   soldAt?: Date | string | null
-  orderItem?: Prisma.OrderItemUncheckedCreateNestedOneWithoutGameKeyInput
+  orderKeys?: Prisma.OrderItemKeyUncheckedCreateNestedManyWithoutGameKeyInput
 }
 
 export type GameKeyCreateOrConnectWithoutProductInput = {
@@ -515,7 +513,7 @@ export type GameKeyScalarWhereInput = {
   soldAt?: Prisma.DateTimeNullableFilter<"GameKey"> | Date | string | null
 }
 
-export type GameKeyCreateWithoutOrderItemInput = {
+export type GameKeyCreateWithoutOrderKeysInput = {
   code: string
   status?: $Enums.KeyStatus
   createdAt?: Date | string
@@ -523,7 +521,7 @@ export type GameKeyCreateWithoutOrderItemInput = {
   product: Prisma.ProductCreateNestedOneWithoutGameKeysInput
 }
 
-export type GameKeyUncheckedCreateWithoutOrderItemInput = {
+export type GameKeyUncheckedCreateWithoutOrderKeysInput = {
   id?: number
   code: string
   productId: number
@@ -532,23 +530,23 @@ export type GameKeyUncheckedCreateWithoutOrderItemInput = {
   soldAt?: Date | string | null
 }
 
-export type GameKeyCreateOrConnectWithoutOrderItemInput = {
+export type GameKeyCreateOrConnectWithoutOrderKeysInput = {
   where: Prisma.GameKeyWhereUniqueInput
-  create: Prisma.XOR<Prisma.GameKeyCreateWithoutOrderItemInput, Prisma.GameKeyUncheckedCreateWithoutOrderItemInput>
+  create: Prisma.XOR<Prisma.GameKeyCreateWithoutOrderKeysInput, Prisma.GameKeyUncheckedCreateWithoutOrderKeysInput>
 }
 
-export type GameKeyUpsertWithoutOrderItemInput = {
-  update: Prisma.XOR<Prisma.GameKeyUpdateWithoutOrderItemInput, Prisma.GameKeyUncheckedUpdateWithoutOrderItemInput>
-  create: Prisma.XOR<Prisma.GameKeyCreateWithoutOrderItemInput, Prisma.GameKeyUncheckedCreateWithoutOrderItemInput>
+export type GameKeyUpsertWithoutOrderKeysInput = {
+  update: Prisma.XOR<Prisma.GameKeyUpdateWithoutOrderKeysInput, Prisma.GameKeyUncheckedUpdateWithoutOrderKeysInput>
+  create: Prisma.XOR<Prisma.GameKeyCreateWithoutOrderKeysInput, Prisma.GameKeyUncheckedCreateWithoutOrderKeysInput>
   where?: Prisma.GameKeyWhereInput
 }
 
-export type GameKeyUpdateToOneWithWhereWithoutOrderItemInput = {
+export type GameKeyUpdateToOneWithWhereWithoutOrderKeysInput = {
   where?: Prisma.GameKeyWhereInput
-  data: Prisma.XOR<Prisma.GameKeyUpdateWithoutOrderItemInput, Prisma.GameKeyUncheckedUpdateWithoutOrderItemInput>
+  data: Prisma.XOR<Prisma.GameKeyUpdateWithoutOrderKeysInput, Prisma.GameKeyUncheckedUpdateWithoutOrderKeysInput>
 }
 
-export type GameKeyUpdateWithoutOrderItemInput = {
+export type GameKeyUpdateWithoutOrderKeysInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumKeyStatusFieldUpdateOperationsInput | $Enums.KeyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -556,7 +554,7 @@ export type GameKeyUpdateWithoutOrderItemInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutGameKeysNestedInput
 }
 
-export type GameKeyUncheckedUpdateWithoutOrderItemInput = {
+export type GameKeyUncheckedUpdateWithoutOrderKeysInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   code?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -578,7 +576,7 @@ export type GameKeyUpdateWithoutProductInput = {
   status?: Prisma.EnumKeyStatusFieldUpdateOperationsInput | $Enums.KeyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   soldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  orderItem?: Prisma.OrderItemUpdateOneWithoutGameKeyNestedInput
+  orderKeys?: Prisma.OrderItemKeyUpdateManyWithoutGameKeyNestedInput
 }
 
 export type GameKeyUncheckedUpdateWithoutProductInput = {
@@ -587,7 +585,7 @@ export type GameKeyUncheckedUpdateWithoutProductInput = {
   status?: Prisma.EnumKeyStatusFieldUpdateOperationsInput | $Enums.KeyStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   soldAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  orderItem?: Prisma.OrderItemUncheckedUpdateOneWithoutGameKeyNestedInput
+  orderKeys?: Prisma.OrderItemKeyUncheckedUpdateManyWithoutGameKeyNestedInput
 }
 
 export type GameKeyUncheckedUpdateManyWithoutProductInput = {
@@ -599,6 +597,35 @@ export type GameKeyUncheckedUpdateManyWithoutProductInput = {
 }
 
 
+/**
+ * Count Type GameKeyCountOutputType
+ */
+
+export type GameKeyCountOutputType = {
+  orderKeys: number
+}
+
+export type GameKeyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  orderKeys?: boolean | GameKeyCountOutputTypeCountOrderKeysArgs
+}
+
+/**
+ * GameKeyCountOutputType without action
+ */
+export type GameKeyCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GameKeyCountOutputType
+   */
+  select?: Prisma.GameKeyCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * GameKeyCountOutputType without action
+ */
+export type GameKeyCountOutputTypeCountOrderKeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderItemKeyWhereInput
+}
+
 
 export type GameKeySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -607,8 +634,9 @@ export type GameKeySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   status?: boolean
   createdAt?: boolean
   soldAt?: boolean
-  orderItem?: boolean | Prisma.GameKey$orderItemArgs<ExtArgs>
+  orderKeys?: boolean | Prisma.GameKey$orderKeysArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.GameKeyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["gameKey"]>
 
 export type GameKeySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -642,8 +670,9 @@ export type GameKeySelectScalar = {
 
 export type GameKeyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "productId" | "status" | "createdAt" | "soldAt", ExtArgs["result"]["gameKey"]>
 export type GameKeyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  orderItem?: boolean | Prisma.GameKey$orderItemArgs<ExtArgs>
+  orderKeys?: boolean | Prisma.GameKey$orderKeysArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.GameKeyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GameKeyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -655,7 +684,7 @@ export type GameKeyIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $GameKeyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "GameKey"
   objects: {
-    orderItem: Prisma.$OrderItemPayload<ExtArgs> | null
+    orderKeys: Prisma.$OrderItemKeyPayload<ExtArgs>[]
     product: Prisma.$ProductPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1059,7 +1088,7 @@ readonly fields: GameKeyFieldRefs;
  */
 export interface Prisma__GameKeyClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  orderItem<T extends Prisma.GameKey$orderItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameKey$orderItemArgs<ExtArgs>>): Prisma.Prisma__OrderItemClient<runtime.Types.Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  orderKeys<T extends Prisma.GameKey$orderKeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameKey$orderKeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderItemKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1492,22 +1521,27 @@ export type GameKeyDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * GameKey.orderItem
+ * GameKey.orderKeys
  */
-export type GameKey$orderItemArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type GameKey$orderKeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the OrderItem
+   * Select specific fields to fetch from the OrderItemKey
    */
-  select?: Prisma.OrderItemSelect<ExtArgs> | null
+  select?: Prisma.OrderItemKeySelect<ExtArgs> | null
   /**
-   * Omit specific fields from the OrderItem
+   * Omit specific fields from the OrderItemKey
    */
-  omit?: Prisma.OrderItemOmit<ExtArgs> | null
+  omit?: Prisma.OrderItemKeyOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.OrderItemInclude<ExtArgs> | null
-  where?: Prisma.OrderItemWhereInput
+  include?: Prisma.OrderItemKeyInclude<ExtArgs> | null
+  where?: Prisma.OrderItemKeyWhereInput
+  orderBy?: Prisma.OrderItemKeyOrderByWithRelationInput | Prisma.OrderItemKeyOrderByWithRelationInput[]
+  cursor?: Prisma.OrderItemKeyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderItemKeyScalarFieldEnum | Prisma.OrderItemKeyScalarFieldEnum[]
 }
 
 /**

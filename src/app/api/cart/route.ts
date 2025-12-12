@@ -6,7 +6,8 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session || session.user?.role === "Admin") {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      console.log(session)
+      return NextResponse.json({ message: session }, { status: 401 });
     }
 
     const userId = Number(session.user.id);

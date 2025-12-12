@@ -394,6 +394,7 @@ export const ModelName = {
   Session: 'Session',
   VerificationToken: 'VerificationToken',
   Order: 'Order',
+  OrderItemKey: 'OrderItemKey',
   OrderItem: 'OrderItem',
   GameKey: 'GameKey'
 } as const
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "product" | "review" | "category" | "productImage" | "cartItem" | "account" | "session" | "verificationToken" | "order" | "orderItem" | "gameKey"
+    modelProps: "user" | "product" | "review" | "category" | "productImage" | "cartItem" | "account" | "session" | "verificationToken" | "order" | "orderItemKey" | "orderItem" | "gameKey"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1155,6 +1156,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    OrderItemKey: {
+      payload: Prisma.$OrderItemKeyPayload<ExtArgs>
+      fields: Prisma.OrderItemKeyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrderItemKeyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrderItemKeyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>
+        }
+        findFirst: {
+          args: Prisma.OrderItemKeyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrderItemKeyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>
+        }
+        findMany: {
+          args: Prisma.OrderItemKeyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>[]
+        }
+        create: {
+          args: Prisma.OrderItemKeyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>
+        }
+        createMany: {
+          args: Prisma.OrderItemKeyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OrderItemKeyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>[]
+        }
+        delete: {
+          args: Prisma.OrderItemKeyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>
+        }
+        update: {
+          args: Prisma.OrderItemKeyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrderItemKeyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrderItemKeyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OrderItemKeyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>[]
+        }
+        upsert: {
+          args: Prisma.OrderItemKeyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderItemKeyPayload>
+        }
+        aggregate: {
+          args: Prisma.OrderItemKeyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrderItemKey>
+        }
+        groupBy: {
+          args: Prisma.OrderItemKeyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderItemKeyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrderItemKeyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderItemKeyCountAggregateOutputType> | number
+        }
+      }
+    }
     OrderItem: {
       payload: Prisma.$OrderItemPayload<ExtArgs>
       fields: Prisma.OrderItemFieldRefs
@@ -1462,13 +1537,21 @@ export const OrderScalarFieldEnum = {
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+export const OrderItemKeyScalarFieldEnum = {
+  id: 'id',
+  orderItemId: 'orderItemId',
+  gameKeyId: 'gameKeyId'
+} as const
+
+export type OrderItemKeyScalarFieldEnum = (typeof OrderItemKeyScalarFieldEnum)[keyof typeof OrderItemKeyScalarFieldEnum]
+
+
 export const OrderItemScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
   productId: 'productId',
   quantity: 'quantity',
-  price: 'price',
-  gameKeyId: 'gameKeyId'
+  price: 'price'
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
@@ -1688,6 +1771,7 @@ export type GlobalOmitConfig = {
   session?: Prisma.SessionOmit
   verificationToken?: Prisma.VerificationTokenOmit
   order?: Prisma.OrderOmit
+  orderItemKey?: Prisma.OrderItemKeyOmit
   orderItem?: Prisma.OrderItemOmit
   gameKey?: Prisma.GameKeyOmit
 }

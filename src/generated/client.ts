@@ -90,6 +90,11 @@ export type VerificationToken = Prisma.VerificationTokenModel
  */
 export type Order = Prisma.OrderModel
 /**
+ * Model OrderItemKey
+ * 
+ */
+export type OrderItemKey = Prisma.OrderItemKeyModel
+/**
  * Model OrderItem
  * 
  */
