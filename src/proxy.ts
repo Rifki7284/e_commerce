@@ -48,6 +48,5 @@ export const config = {
     "/admin/:path*",
     "/home/:path*",
     "/product/:path*",
-    "/search/:path*",
   ],
 };
