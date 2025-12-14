@@ -58,7 +58,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             data: {
               email: user.email!,
               name: user.name,
-              password: null, // ✅ Google tidak punya password
+              password: null,
+              emailVerified: true,
+              otpHash: null,
+              otpExpiredAt: null,
+              otpAttempts: 0,
               role: "Client",
             },
           });
