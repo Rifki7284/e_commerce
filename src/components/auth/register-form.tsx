@@ -77,7 +77,7 @@ export default function RegisterForm({ onSwitchMode }: RegisterFormProps) {
       return;
     }
 
-    router.push("/home");
+    router.push("/");
   };
 
   const handleVerifyOTP = async () => {
