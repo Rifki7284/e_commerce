@@ -10,7 +10,6 @@ import {
   TrendingUp, 
   TrendingDown,
   ArrowUpRight,
-  ArrowDownRight,
   Eye,
   ShoppingBag
 } from "lucide-react"

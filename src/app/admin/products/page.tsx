@@ -1,10 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import AdminLayout from "@/components/admin/admin-layout"
-import ProductForm from "@/components/admin/product-form"
 import ProductTable from "@/components/admin/product-table"
-import { PrismaClient } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import ProductFormModal from "@/components/admin/product-form"
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
