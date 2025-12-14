@@ -14,18 +14,22 @@ enum KeyStatus {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  name     String?
-  password String?
-  role      Role       @default(Client)
-  createdAt DateTime   @default(now())
-  cartItems CartItem[]
-  accounts  Account[]
-  sessions  Session[]
-  reviews   Review[]
-  updatedAt DateTime?  @updatedAt
-  orders    Order[]
+  id            Int        @id @default(autoincrement())
+  email         String     @unique
+  name          String?
+  password      String?
+  emailVerified Boolean    @default(false)
+  otpHash       String?
+  otpExpiredAt  DateTime?
+  otpAttempts   Int        @default(0)
+  role          Role       @default(Client)
+  createdAt     DateTime   @default(now())
+  cartItems     CartItem[]
+  accounts      Account[]
+  sessions      Session[]
+  reviews       Review[]
+  updatedAt     DateTime?  @updatedAt
+  orders        Order[]
 }
 
 enum Role {
