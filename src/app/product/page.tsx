@@ -1,9 +1,15 @@
-import { Download } from "lucide-react"
-import ClientHeader from "@/components/client/client-header"
+import { Download } from "lucide-react";
+import ClientHeader from "@/components/client/client-header";
 import ProductFilter from "@/components/product/product-filter";
 import { Metadata } from "next";
-export async function generateMetadata({ searchParams }: { searchParams: { search?: string } }): Promise<Metadata> {
-  const params = await searchParams
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: { search?: string };
+}): Promise<Metadata> {
+  const params = await searchParams;
   const query = params?.search?.toLocaleLowerCase() ?? "game";
   const title = `Cari ${query} – Hasil Pencarian | GameKeys Indonesia`;
   const description = `Temukan hasil pencarian untuk "${query}" di GameKeys Indonesia. Steam key, game original, digital key, dan gift card dengan harga terbaik.`;
@@ -14,7 +20,7 @@ export async function generateMetadata({ searchParams }: { searchParams: { searc
     `${query} key`,
     "pencarian game",
     "steam key murah",
-    "game original indonesia"
+    "game original indonesia",
   ];
 
   return {
@@ -43,8 +49,8 @@ export async function generateMetadata({ searchParams }: { searchParams: { searc
         "max-snippet": -1,
         "max-image-preview": "large",
         "max-video-preview": -1,
-      }
-    }
+      },
+    },
   };
 }
 export default async function ProductsPage({
@@ -53,7 +59,14 @@ export default async function ProductsPage({
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const params = await searchParams
+  const session = await auth();
+  if (!session) {
+    redirect("/");
+  }
+  if (session?.user.role == "Admin") {
+    redirect("/admin/dashbaord");
+  }
+  const params = await searchParams;
   const page = params?.page ?? "1";
   const search = params?.search ?? "";
   const category = params?.category ?? "";
@@ -62,14 +75,19 @@ export default async function ProductsPage({
   const sortBy = params?.sortBy ?? "";
   const perPage = "9";
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const resProduct = await fetch(`${baseUrl}/api/products?page=${page}&perPage=${perPage}&search=${search == null ? "" : search}&category=${category}&maxPrice=${maxPrice}&minPrice=${minPrice}&sort=${sortBy}`, {
-    cache: "no-store",
-  });
+  const resProduct = await fetch(
+    `${baseUrl}/api/products?page=${page}&perPage=${perPage}&search=${
+      search == null ? "" : search
+    }&category=${category}&maxPrice=${maxPrice}&minPrice=${minPrice}&sort=${sortBy}`,
+    {
+      cache: "no-store",
+    }
+  );
   const resCat = await fetch(`${baseUrl}/api/category`, {
     cache: "no-store",
   });
   const dataProduct = await resProduct.json();
-  const dataCat = await resCat.json()
+  const dataCat = await resCat.json();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -93,7 +111,10 @@ export default async function ProductsPage({
           </p>
         </div>
       </div>
-      <ProductFilter category={dataCat.category} product={dataProduct.product} />
+      <ProductFilter
+        category={dataCat.category}
+        product={dataProduct.product}
+      />
     </div>
-  )
+  );
 }

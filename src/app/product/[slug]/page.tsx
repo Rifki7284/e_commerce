@@ -1,6 +1,8 @@
 import ProductDetail from "@/components/product/product-detail";
+import { auth } from "@/lib/auth";
 import { Metadata } from "next";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 type Props = {
   params: { slug: string };
 };
@@ -94,6 +96,14 @@ export default async function ProductDetailPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const session = await auth();
+  if (!session) {
+    redirect("/");
+  }
+  if (session?.user.role == "Admin") {
+    redirect("/admin/dashbaord");
+  }
+
   const { slug } = await params;
   const h = await headers();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;

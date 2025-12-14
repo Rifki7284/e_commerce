@@ -1,12 +1,17 @@
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  const session = await auth();
   const count = await prisma.order.count({
     where: {
       status: "paid",
     },
   });
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
   try {
     const searchParams = req.nextUrl.searchParams;
     const page = Number(searchParams.get("page"));
@@ -19,6 +24,7 @@ export async function GET(req: NextRequest) {
           take: perPage,
           where: {
             status: "paid",
+            userId: Number(session?.user.id),
             OR: [
               {
                 transactionId: { contains: search || "", mode: "insensitive" },
@@ -28,7 +34,7 @@ export async function GET(req: NextRequest) {
           include: {
             orderItems: {
               include: {
-                product:true,
+                product: true,
                 keys: true,
               },
             },
@@ -49,6 +55,7 @@ export async function GET(req: NextRequest) {
           skip: skip,
           where: {
             status: "paid",
+            userId: Number(session?.user.id),
             OR: [
               {
                 transactionId: { contains: search || "", mode: "insensitive" },
@@ -76,6 +83,7 @@ export async function GET(req: NextRequest) {
       const transaction = await prisma.order.findMany({
         where: {
           status: "paid",
+          userId: Number(session?.user.id),
           OR: [
             { transactionId: { contains: search || "", mode: "insensitive" } },
           ],

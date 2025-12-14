@@ -15,6 +15,7 @@ import ProductSkeleton from "@/components/product/product-skeleton";
 import { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import PopularCategories from "@/components/category/popular-categories";
+import { redirect } from "next/navigation";
 export const metadata: Metadata = {
   title:
     "GameKeys Indonesia – Steam Key Murah, Game Original, Gift Card & Top Up",
@@ -66,6 +67,13 @@ export default async function HomePage({
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
+  const session = await auth();
+  if (session?.user.role == "Admin") {
+    redirect("/admin/dashbaord");
+  }
+  if(!session){
+    redirect("/")
+  }
   const params = await searchParams;
   const page = params?.page ?? "1";
   const perPage = "8";
@@ -82,8 +90,7 @@ export default async function HomePage({
     cache: "no-store",
   });
   const dataCategory = await category.json();
-  const session = await auth();
-  console.log(session);
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
       <ClientHeader />
