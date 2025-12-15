@@ -73,8 +73,7 @@ const ProductDetail = ({ product, existingReview, session }: DetailProps) => {
   const [reviewError, setReviewError] = useState("");
   const [showLoginModal, setShowLoginModal] = useState(false);
   const router = useRouter();
-
-  // Helper function untuk cek apakah user sudah login
+  console.log(session)
   const isUserLoggedIn = (): boolean => {
     return !!session;
   };

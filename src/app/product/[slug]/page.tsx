@@ -103,19 +103,16 @@ export default async function ProductDetailPage({
   if (session?.user.role == "Admin") {
     redirect("/admin/dashbaord");
   }
-
+  console.log(session)
   const { slug } = await params;
   const h = await headers();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const res = await fetch(`${baseUrl}/api/products/detail/${slug}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(`${baseUrl}/api/products/detail/${slug}`);
   const data = await res.json();
   const product = data.product[0];
   const resReview = await fetch(
     `${baseUrl}/api/reviews/me?productId=${data.product[0].id}`,
     {
-      cache: "no-store",
       credentials: "include",
       headers: {
         Cookie: h.get("cookie") ?? "",
@@ -151,7 +148,7 @@ export default async function ProductDetailPage({
           </div>
 
           {/* Product Details */}
-          <ProductDetail product={product} existingReview={dataReview} />
+          <ProductDetail product={product} existingReview={dataReview} session={session?.user} />
         </div>
       </div>
     </>
