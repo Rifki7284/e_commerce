@@ -45,11 +45,10 @@ export async function PUT(
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
     const slug = formData.get("slug") as string;
-    const stock = parseInt(formData.get("stock") as string, 10);
     const categoryRaw = formData.get("category") as string;
 
     // Validasi
-    if (!name || !price || !stock || !categoryRaw) {
+    if (!name || !price || !categoryRaw) {
       return NextResponse.json(
         { error: "All required fields must be filled" },
         { status: 400 }
@@ -134,7 +133,6 @@ export async function PUT(
         price,
         description,
         slug,
-        stock,
         categoryId,
         images: {
           create: newImageUrls.map((url) => ({ url })),

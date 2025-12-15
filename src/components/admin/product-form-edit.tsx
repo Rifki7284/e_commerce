@@ -29,7 +29,6 @@ interface ProductFormData {
     price: string
     slug: string
     description: string
-    stock: string
     category: string
     imageFiles: File[]
     imageUrls: string[]
@@ -40,7 +39,6 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
         name: "",
         price: "",
         description: "",
-        stock: "",
         category: "",
         slug: "",
         imageFiles: [],
@@ -73,7 +71,6 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
                 name: data.name ?? "",
                 price: data.price ?? "",
                 description: data.description ?? "",
-                stock: data.stock ?? "",
                 category: data.category ?? "",
                 slug: data.slug ?? "",
                 imageFiles: [],
@@ -169,7 +166,6 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
             name: "",
             price: "",
             description: "",
-            stock: "",
             category: "",
             slug: "",
             imageFiles: [],
@@ -186,7 +182,7 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
         e.preventDefault()
         setErrorMessage(null)
 
-        if (!formData.name || !formData.price || !formData.stock || !formData.category) {
+        if (!formData.name || !formData.price ||  !formData.category) {
             setErrorMessage("Please fill in all required fields")
             return
         }
@@ -197,7 +193,6 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
             form.append("name", formData.name)
             form.append("price", formData.price)
             form.append("description", formData.description)
-            form.append("stock", formData.stock)
             form.append("category", formData.category)
             form.append("slug", formData.slug)
 
@@ -219,10 +214,7 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
                 const err = await res.json()
                 throw new Error(err.message || "Failed to update product")
             }
-
-            await new Promise((r) => setTimeout(r, 500))
             handleClose()
-            onSuccess?.()
         } catch (error: any) {
             setErrorMessage(error.message || "Failed to update product. Please try again.")
         } finally {
@@ -344,25 +336,10 @@ export default function ProductFormEditModal({ isOpen, onClose, onSuccess, id, d
                                 </div>
                             </div>
 
-                            {/* Stock */}
-                            <div className="space-y-2">
-                                <Label htmlFor="stock" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                                    Stock
-                                    <span className="text-red-500">*</span>
-                                </Label>
-                                <Input
-                                    id="stock"
-                                    type="number"
-                                    name="stock"
-                                    value={formData.stock}
-                                    onChange={handleChange}
-                                    placeholder="0"
-                                    step="1"
-                                    min="0"
-                                    required
-                                    className="h-11 border-2"
-                                />
-                            </div>
+
+
+                            
+                            
                         </div>
 
                         {/* Description */}

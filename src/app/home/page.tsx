@@ -6,6 +6,7 @@ import {
   TrendingUp,
   Award,
   Shield,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import ClientHeader from "@/components/client/client-header";
@@ -13,9 +14,7 @@ import ProductGrid from "@/components/product/product-grid";
 import { Suspense } from "react";
 import ProductSkeleton from "@/components/product/product-skeleton";
 import { Metadata } from "next";
-import { auth } from "@/lib/auth";
 import PopularCategories from "@/components/category/popular-categories";
-import { redirect } from "next/navigation";
 export const metadata: Metadata = {
   title:
     "GameKeys Indonesia – Steam Key Murah, Game Original, Gift Card & Top Up",
@@ -67,13 +66,6 @@ export default async function HomePage({
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const session = await auth();
-  if (session?.user.role == "Admin") {
-    redirect("/admin/dashbaord");
-  }
-  if(!session){
-    redirect("/")
-  }
   const params = await searchParams;
   const page = params?.page ?? "1";
   const perPage = "8";
@@ -90,7 +82,7 @@ export default async function HomePage({
     cache: "no-store",
   });
   const dataCategory = await category.json();
-
+  const dataProduct = data.product;
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
       <ClientHeader />
@@ -204,8 +196,24 @@ export default async function HomePage({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <Suspense fallback={<ProductSkeleton />}>
-            <ProductGrid product={data.product} />
+            <ProductGrid product={dataProduct} />
           </Suspense>
+          <div className="w-full  col-span-1 sm:col-span-2 lg:col-span-4">
+            {dataProduct.length > 0 && (
+              <div className="flex justify-center mt-8">
+                <Link
+                  href="/products"
+                  className="group inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105"
+                >
+                  <span>Show All Products</span>
+                  <ArrowRight
+                    size={20}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

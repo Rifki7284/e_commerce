@@ -60,9 +60,6 @@ export default async function ProductsPage({
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const session = await auth();
-  if (!session) {
-    redirect("/");
-  }
   if (session?.user.role == "Admin") {
     redirect("/admin/dashbaord");
   }
@@ -88,7 +85,7 @@ export default async function ProductsPage({
   });
   const dataProduct = await resProduct.json();
   const dataCat = await resCat.json();
-
+  const totalPage = Math.ceil(dataProduct.count / Number(perPage));
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
       <ClientHeader />
@@ -114,6 +111,8 @@ export default async function ProductsPage({
       <ProductFilter
         category={dataCat.category}
         product={dataProduct.product}
+        page={Number(page)}
+        totalPage={totalPage}
       />
     </div>
   );

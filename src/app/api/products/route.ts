@@ -196,8 +196,6 @@ export async function POST(req: Request) {
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
     const slug = formData.get("slug") as string;
-    const code = formData.get("code") as string;
-    const stock = parseInt(formData.get("stock") as string, 10);
     const categoryIdRaw = formData.get("categoryId");
 
     if (!categoryIdRaw) {
@@ -251,7 +249,7 @@ export async function POST(req: Request) {
         name,
         price,
         description,
-        stock,
+        stock:0,
         slug,
         categoryId,
         images: {
@@ -260,13 +258,6 @@ export async function POST(req: Request) {
       },
       include: { images: true },
     });
-    await prisma.gameKey.create({
-      data: {
-        code,
-        productId: product.id,
-        status: "Available",
-      },
-    });
     return NextResponse.json(
       { res: "Data berhasil ditambahkan" },
       { status: 200 }
@@ -274,7 +265,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(
-      { error: "Failed to create product" },
+      { error: error},
       { status: 500 }
     );
   }

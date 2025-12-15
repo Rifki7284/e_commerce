@@ -6,64 +6,49 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
 
   /* ======================
-     1. WAJIB LOGIN
+     1. WAJIB LOGIN CLIENT (/orders)
   ====================== */
-  const protectedPaths = ["/orders", "/home", "/product"];
-
-  if (
-    protectedPaths.some((p) => pathname.startsWith(p)) &&
-    !session?.user
-  ) {
-    return NextResponse.redirect(new URL("/", req.url));
+  if (pathname.startsWith("/orders") && (!session?.user || session.user.role !== "Client")) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   /* ======================
      2. ADMIN AREA
   ====================== */
   if (pathname.startsWith("/admin")) {
-    if (!session?.user) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-
-    if (session.user.role !== "Admin") {
-      return NextResponse.redirect(new URL("/", req.url));
+    if (!session?.user || session.user.role !== "Admin") {
+      return NextResponse.redirect(new URL("/login", req.url));
     }
   }
 
   /* ======================
-     3. ADMIN DILARANG MASUK CLIENT PAGE
+     3. ADMIN TIDAK BOLEH MASUK CLIENT PAGE
   ====================== */
   if (session?.user?.role === "Admin") {
-    const clientPaths = ["/orders"];
-
+    const clientPaths = ["/orders", "/home", "/product"];
     if (clientPaths.some((p) => pathname.startsWith(p))) {
-      return NextResponse.redirect(
-        new URL("/admin/dashboard", req.url)
-      );
+      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     }
   }
 
   /* ======================
      4. CLIENT AREA
+     client bebas akses home & product
+     tidak boleh masuk admin
   ====================== */
   if (session?.user?.role === "Client") {
-    const allowedForClient = ["/orders", "/home", "/product"];
-
-    if (!allowedForClient.some((p) => pathname.startsWith(p))) {
+    if (pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/home", req.url));
     }
   }
 
   /* ======================
-     5. ROOT REDIRECT
+     5. LOGIN PAGE REDIRECT
   ====================== */
-  if (pathname === "/" && session?.user) {
+  if (pathname === "/login" && session?.user) {
     if (session.user.role === "Admin") {
-      return NextResponse.redirect(
-        new URL("/admin/dashboard", req.url)
-      );
+      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     }
-
     if (session.user.role === "Client") {
       return NextResponse.redirect(new URL("/home", req.url));
     }
@@ -74,7 +59,7 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    "/",
+    "/login",
     "/admin/:path*",
     "/home/:path*",
     "/product/:path*",
