@@ -6,6 +6,8 @@ import { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: { slug: string };
 };
@@ -103,7 +105,7 @@ export default async function ProductDetailPage({
   if (session?.user.role == "Admin") {
     redirect("/admin/dashbaord");
   }
-  console.log(session)
+  console.log(session);
   const { slug } = await params;
   const h = await headers();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -120,7 +122,7 @@ export default async function ProductDetailPage({
     }
   );
   const dataReview = await resReview.json();
-  const referer = h.get("referer");
+  const referer = h.get("referer") ?? "/home";
 
   return (
     <>
@@ -135,7 +137,7 @@ export default async function ProductDetailPage({
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm text-slate-400 mb-6">
             <Link
-              href={referer as string}
+              href={referer}
               className="hover:text-blue-400 transition-colors flex items-center gap-1"
             >
               <ChevronLeft size={16} />
@@ -148,7 +150,11 @@ export default async function ProductDetailPage({
           </div>
 
           {/* Product Details */}
-          <ProductDetail product={product} existingReview={dataReview} session={session?.user} />
+          <ProductDetail
+            product={product}
+            existingReview={dataReview}
+            session={session?.user}
+          />
         </div>
       </div>
     </>
