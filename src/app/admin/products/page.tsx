@@ -72,6 +72,7 @@ export default function AdminPage() {
     setLoading(true)
     const res = await fetch(`/api/products?page=${currentPage}&perPage=${perPage}&search=${search}`)
     const data = await res.json()
+    console.log(data)
     setProducts(data.product)
     setTotalPage(Math.ceil(data.count / Number(perPage)))
     setLoading(false)

@@ -4,6 +4,8 @@ import path from "path";
 import { writeFile } from "fs/promises";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { createClient } from "@supabase/supabase-js";
+
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
@@ -184,12 +186,103 @@ export async function GET(req: NextRequest) {
 }
 
 // POST create new product
+// export async function POST(req: Request) {
+//   try {
+//     const session = await auth();
+//     if (!session || session.user?.role !== "Admin") {
+//       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+//     }
+//     const formData = await req.formData();
+
+//     const name = formData.get("name") as string;
+//     const price = parseFloat(formData.get("price") as string);
+//     const description = formData.get("description") as string;
+//     const slug = formData.get("slug") as string;
+//     const categoryIdRaw = formData.get("categoryId");
+
+//     if (!categoryIdRaw) {
+//       return NextResponse.json(
+//         { error: "Category ID is required" },
+//         { status: 400 }
+//       );
+//     }
+//     const existing = await prisma.product.findFirst({ where: { slug: slug } });
+//     if (existing) {
+//       return NextResponse.json(
+//         { error: "Slug already exists" },
+//         { status: 400 }
+//       );
+//     }
+//     const categoryId = Number(categoryIdRaw);
+//     if (isNaN(categoryId)) {
+//       return NextResponse.json(
+//         { error: "Invalid Category ID" },
+//         { status: 400 }
+//       );
+//     }
+
+//     // ✅ Ambil semua file (karena dikirim sebagai "files[]")
+//     const files = formData.getAll("files[]") as File[];
+
+//     const imageUrls: string[] = [];
+
+//     // Buat folder upload jika belum ada
+//     const uploadDir = path.join(process.cwd(), "public", "uploads");
+//     if (!fs.existsSync(uploadDir)) {
+//       fs.mkdirSync(uploadDir, { recursive: true });
+//     }
+
+//     // ✅ Simpan semua file satu per satu
+//     for (const file of files) {
+//       if (!(file instanceof File)) continue;
+
+//       const bytes = await file.arrayBuffer();
+//       const buffer = Buffer.from(bytes);
+//       const fileName = `${Date.now()}-${file.name}`;
+//       const filePath = path.join(uploadDir, fileName);
+
+//       await writeFile(filePath, buffer);
+//       imageUrls.push(`/uploads/${fileName}`);
+//     }
+
+//     // ✅ Simpan ke database dengan relasi ke images
+//     const product = await prisma.product.create({
+//       data: {
+//         name,
+//         price,
+//         description,
+//         stock:0,
+//         slug,
+//         categoryId,
+//         images: {
+//           create: imageUrls.map((url) => ({ url })),
+//         },
+//       },
+//       include: { images: true },
+//     });
+//     return NextResponse.json(
+//       { res: "Data berhasil ditambahkan" },
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     console.error("Error creating product:", error);
+//     return NextResponse.json(
+//       { error: error},
+//       { status: 500 }
+//     );
+//   }
+// }
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session || session.user?.role !== "Admin") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+
     const formData = await req.formData();
 
     const name = formData.get("name") as string;
@@ -204,13 +297,18 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const existing = await prisma.product.findFirst({ where: { slug: slug } });
+
+    const existing = await prisma.product.findFirst({
+      where: { slug },
+    });
+
     if (existing) {
       return NextResponse.json(
         { error: "Slug already exists" },
         { status: 400 }
       );
     }
+
     const categoryId = Number(categoryIdRaw);
     if (isNaN(categoryId)) {
       return NextResponse.json(
@@ -219,45 +317,47 @@ export async function POST(req: Request) {
       );
     }
 
-    // ✅ Ambil semua file (karena dikirim sebagai "files[]")
+    // ✅ Ambil file dari form
     const files = formData.getAll("files[]") as File[];
-
     const imageUrls: string[] = [];
 
-    // Buat folder upload jika belum ada
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    // ✅ Simpan semua file satu per satu
     for (const file of files) {
       if (!(file instanceof File)) continue;
 
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const fileName = `${Date.now()}-${file.name}`;
-      const filePath = path.join(uploadDir, fileName);
+      const buffer = Buffer.from(await file.arrayBuffer());
 
-      await writeFile(filePath, buffer);
-      imageUrls.push(`/uploads/${fileName}`);
+      const filePath = `products/${Date.now()}-${file.name}`;
+
+      const { error } = await supabase.storage
+        .from("products")
+        .upload(filePath, buffer, {
+          contentType: file.type,
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      const { data } = supabase.storage
+        .from("products")
+        .getPublicUrl(filePath);
+
+      imageUrls.push(data.publicUrl);
     }
 
-    // ✅ Simpan ke database dengan relasi ke images
-    const product = await prisma.product.create({
+    await prisma.product.create({
       data: {
         name,
         price,
         description,
-        stock:0,
+        stock: 0,
         slug,
         categoryId,
         images: {
           create: imageUrls.map((url) => ({ url })),
         },
       },
-      include: { images: true },
     });
+
     return NextResponse.json(
       { res: "Data berhasil ditambahkan" },
       { status: 200 }
@@ -265,7 +365,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(
-      { error: error},
+      { error: error },
       { status: 500 }
     );
   }
