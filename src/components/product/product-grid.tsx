@@ -42,7 +42,7 @@ export interface Review {
 const ProductGrid = ({ product }: ProductCardProps) => {
     return (
         <>
-            {product.length != 0 ? product.map((item: Product, idx) => {
+            {product&&product.length != 0 ? product.map((item: Product, idx) => {
                 return (
                     <ProductCard key={idx} product={item} />
                 )

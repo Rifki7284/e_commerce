@@ -75,14 +75,9 @@ export default async function ProductsPage({
   const resProduct = await fetch(
     `${baseUrl}/api/products?page=${page}&perPage=${perPage}&search=${
       search == null ? "" : search
-    }&category=${category}&maxPrice=${maxPrice}&minPrice=${minPrice}&sort=${sortBy}`,
-    {
-      cache: "no-store",
-    }
+    }&category=${category}&maxPrice=${maxPrice}&minPrice=${minPrice}&sort=${sortBy}`
   );
-  const resCat = await fetch(`${baseUrl}/api/category`, {
-    cache: "no-store",
-  });
+  const resCat = await fetch(`${baseUrl}/api/category`);
   const dataProduct = await resProduct.json();
   const dataCat = await resCat.json();
   const totalPage = Math.ceil(dataProduct.count / Number(perPage));

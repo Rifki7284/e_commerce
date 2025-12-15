@@ -71,16 +71,11 @@ export default async function HomePage({
   const perPage = "8";
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
   const res = await fetch(
-    `${baseUrl}/api/products?page=${page}&perPage=${perPage}`,
-    {
-      cache: "no-store",
-    }
+    `${baseUrl}/api/products?page=${page}&perPage=${perPage}`
   );
   const data = await res.json();
 
-  const category = await fetch(`${baseUrl}/api/category/popular`, {
-    cache: "no-store",
-  });
+  const category = await fetch(`${baseUrl}/api/category/popular`);
   const dataCategory = await category.json();
   const dataProduct = data.product;
   return (
@@ -199,7 +194,7 @@ export default async function HomePage({
             <ProductGrid product={dataProduct} />
           </Suspense>
           <div className="w-full  col-span-1 sm:col-span-2 lg:col-span-4">
-            {dataProduct.length > 0 && (
+            {dataProduct && dataProduct.length > 0 && (
               <div className="flex justify-center mt-8">
                 <Link
                   href="/products"
@@ -231,8 +226,20 @@ export default async function HomePage({
               Explore our digital product collections
             </p>
           </div>
-
-          <PopularCategories categories={dataCategory.data} />
+          {dataCategory.data ? (
+            <PopularCategories categories={dataCategory.data} />
+          ) : (
+            <div className="col-span-full">
+              <div className="text-center flex flex-col py-20 bg-linear-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700">
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  No Category Found
+                </h3>
+                <p className="text-slate-400">
+                  Check back later for amazing deals!
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
