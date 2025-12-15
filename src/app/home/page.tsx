@@ -197,7 +197,7 @@ export default async function HomePage({
             {dataProduct && dataProduct.length > 0 && (
               <div className="flex justify-center mt-8">
                 <Link
-                  href="/products"
+                  href="/product"
                   className="group inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105"
                 >
                   <span>Show All Products</span>
