@@ -22,7 +22,7 @@ interface ProductImage {
 }
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>()
-  const [perPage, setPerPage] = useState<string>("2")
+  const [perPage, setPerPage] = useState<string>("5")
   const [totalPage, setTotalPage] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [loading, setLoading] = useState<boolean>(true)

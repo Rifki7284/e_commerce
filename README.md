@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛍️ E-Commerce Web Application
 
-## Getting Started
+A **full-stack e-commerce web application** built as a portfolio project using **Next.js App Router**, **Prisma ORM**, and **PostgreSQL**.  
+This project demonstrates real-world e-commerce features such as product management, search & filtering, authentication, order handling, and admin-ready architecture.
 
-First, run the development server:
+🔗 Repository: https://github.com/Rifki7284/e_commerce
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📌 Table of Contents
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Overview  
+- Features  
+- Tech Stack  
+- System Architecture  
+- Database Schema  
+- API Endpoints  
+- Installation & Setup  
+- Environment Variables  
+- Usage  
+- Screenshots  
+- Security Notes  
+- Future Improvements  
+- License  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🔎 Overview
 
-To learn more about Next.js, take a look at the following resources:
+This project is designed to simulate a real online store, focusing on:
+- clean backend architecture
+- scalable database design
+- optimized querying (pagination, filtering, sorting)
+- modern frontend UI
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+It is suitable as a **full-stack developer portfolio project**.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🚀 Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🛒 Product
+- Product listing with pagination
+- Search by product name & description
+- Filter by category and price range
+- Sort by price (low/high) and rating
+- Product detail page
+- Multiple product images
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### ⭐ Review & Rating
+- Users can leave product reviews
+- Average rating calculation
+- Rating-based sorting
+
+### 🧑 Authentication
+- Session-based authentication
+- Protected routes
+- Ready for OAuth (Google, Credentials)
+
+### 📦 Order
+- Create orders from cart
+- Order list (user & admin ready)
+- Order status handling:
+  - PENDING
+  - PAID
+  - CANCELLED
+
+### 📊 Admin-Ready
+- Admin order management
+- Product CRUD structure
+- Extendable role-based access
+
+---
+
+## 🧠 Tech Stack
+
+### Frontend
+- **Next.js 16 (App Router)**
+- React
+- Tailwind CSS
+
+### Backend
+- Next.js API Routes
+- Prisma ORM
+
+### Database
+- PostgreSQL
+
+### Authentication
+- NextAuth.js
+
+---
+
+## 🏗️ System Architecture
+

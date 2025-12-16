@@ -8,5 +8,4 @@ const formatPrice = (price: number): string => {
     }).format(price);
     return formatted.replace(/\s+/g, "");
 };
-
 export default formatPrice

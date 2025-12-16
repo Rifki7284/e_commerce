@@ -1,10 +1,12 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState, useEffect } from "react"
-import { Avatar } from "../ui/avatar"
-import { LayoutGrid } from "lucide-react"
-import { ThemeToggle } from "./theme-toggle"
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Avatar } from "../ui/avatar";
+import { LayoutGrid, LogOut } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
+import { signOut, useSession } from "next-auth/react";
+import { Button } from "../ui/button";
 
 const navigationItems = [
   {
@@ -16,7 +18,13 @@ const navigationItems = [
     name: "Products",
     href: "/admin/products",
     icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -48,7 +56,13 @@ const navigationItems = [
     name: "Orders",
     href: "/admin/orders",
     icon: (
-      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -57,48 +71,23 @@ const navigationItems = [
       </svg>
     ),
   },
-  // {
-  //   name: "Analytics",
-  //   href: "/admin/analytics",
-  //   icon: (
-  //     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-  //       <path
-  //         strokeLinecap="round"
-  //         strokeLinejoin="round"
-  //         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-  //       />
-  //     </svg>
-  //   ),
-  // },
-  // {
-  //   name: "Settings",
-  //   href: "/admin/settings",
-  //   icon: (
-  //     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-  //       <path
-  //         strokeLinecap="round"
-  //         strokeLinejoin="round"
-  //         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-  //       />
-  //       <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-  //     </svg>
-  //   ),
-  // },
-]
+];
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [currentTime, setCurrentTime] = useState("")
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState("");
+  const session = useSession();
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date()
-      setCurrentTime(now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }))
-    }
-    updateTime()
-    const interval = setInterval(updateTime, 1000)
-    return () => clearInterval(interval)
-  }, [])
+      const now = new Date();
+      setCurrentTime(
+        now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+      );
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -112,7 +101,13 @@ export default function Navigation() {
             aria-label="Toggle menu"
           >
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            <svg className="h-5 w-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+            <svg
+              className="h-5 w-5 relative z-10"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -128,7 +123,9 @@ export default function Navigation() {
             </h1>
             <div className="flex items-center gap-1.5">
               <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{currentTime}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                {currentTime}
+              </p>
             </div>
           </div>
 
@@ -157,14 +154,16 @@ export default function Navigation() {
                     StoreHub
                   </h1>
                 </div>
-           
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium ml-10">Admin Panel</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium ml-10">
+                Admin Panel
+              </p>
             </div>
           </div>
 
           {/* Navigation Items */}
           <nav className="flex-1 space-y-1.5 px-3 py-6 overflow-y-auto">
+            {/* Navigation Items */}
             {navigationItems.map((item, index) => (
               <Link
                 key={item.name}
@@ -177,11 +176,11 @@ export default function Navigation() {
                 <div className="absolute inset-0 bg-linear-to-r from-blue-100/0 via-purple-100/50 to-pink-100/0 dark:from-blue-500/0 dark:via-blue-500/10 dark:to-purple-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
 
                 {/* Icon Container */}
-                <Avatar className="relative rounded-xl p-2.5 flex items-center justify-center shadow-sm transition-all bg-gray-100 dark:bg-gray-700 group-hover:bg-linear-to-br group-hover:from-blue-500 group-hover:to-purple-600 dark:group-hover:from-blue-600 dark:group-hover:to-purple-700 group-hover:shadow-md group-hover:scale-110">
+                <div className="relative rounded-xl p-2.5 flex items-center justify-center shadow-sm transition-all bg-gray-100 dark:bg-gray-700 group-hover:bg-linear-to-br group-hover:from-blue-500 group-hover:to-purple-600 dark:group-hover:from-blue-600 dark:group-hover:to-purple-700 group-hover:shadow-md group-hover:scale-110">
                   <span className="text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors">
                     {item.icon}
                   </span>
-                </Avatar>
+                </div>
 
                 {/* Navigation Text */}
                 <span className="font-semibold relative z-10">{item.name}</span>
@@ -194,10 +193,49 @@ export default function Navigation() {
                   viewBox="0 0 24 24"
                   strokeWidth={2}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </Link>
             ))}
+
+            {/* Logout Button */}
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="group relative flex items-center gap-3 w-full rounded-xl px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-all hover:bg-linear-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-700 active:scale-[0.98] overflow-hidden"
+              style={{ animationDelay: `${navigationItems.length * 50}ms` }}
+            >
+              {/* Hover Effect Background */}
+              <div className="absolute inset-0 bg-linear-to-r from-red-100/0 via-orange-100/50 to-pink-100/0 dark:from-red-500/0 dark:via-red-500/10 dark:to-orange-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+
+              {/* Icon Container */}
+              <div className="relative rounded-xl p-2.5 flex items-center justify-center shadow-sm transition-all bg-gray-100 dark:bg-gray-700 group-hover:bg-linear-to-br group-hover:from-red-500 group-hover:to-orange-600 dark:group-hover:from-red-600 dark:group-hover:to-orange-700 group-hover:shadow-md group-hover:scale-110">
+                <span className="text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors">
+                  <LogOut className="h-5 w-5" />
+                </span>
+              </div>
+
+              {/* Navigation Text */}
+              <span className="font-semibold relative z-10">Logout</span>
+
+              {/* Arrow Indicator */}
+              <svg
+                className="ml-auto h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-red-600 dark:text-red-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
           </nav>
 
           {/* User Profile Section */}
@@ -209,10 +247,12 @@ export default function Navigation() {
                 <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-white dark:border-gray-800 shadow-sm"></div>
               </div>
               <div className="flex-1 text-sm">
-                <p className="font-semibold text-gray-800 dark:text-gray-100">Admin User</p>
+                <p className="font-semibold text-gray-800 dark:text-gray-100">
+                  {session.data?.user.name}
+                </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500"></span>
-                  admin@store.com
+                  {session.data?.user.email}
                 </p>
               </div>
               {/* Dropdown Arrow */}
@@ -223,7 +263,11 @@ export default function Navigation() {
                 viewBox="0 0 24 24"
                 strokeWidth={2}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -238,5 +282,5 @@ export default function Navigation() {
         ></div>
       )}
     </>
-  )
+  );
 }

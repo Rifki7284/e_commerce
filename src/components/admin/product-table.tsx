@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
+import formatPrice from "@/lib/formatPrice";
 
 interface Category {
   id: number;
@@ -79,13 +80,7 @@ export default function ProductTable({
   const [data, setData] = useState<ProductFormData | null>(null);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
+
 
   const handleEdit = ({ id, isOpen, data }: EditProps) => {
     setId(id);
@@ -150,7 +145,12 @@ export default function ProductTable({
               {loading && (
                 <tr>
                   <td colSpan={6} className="py-6 text-center">
-                    <Spinner className="size-6 text-primary inline-block" />
+                    <div className="flex flex-col items-center justify-center py-12 space-y-3">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <p className="text-sm text-muted-foreground">
+                        Loading orders...
+                      </p>
+                    </div>
                   </td>
                 </tr>
               )}
