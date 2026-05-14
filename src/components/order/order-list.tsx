@@ -142,7 +142,7 @@ export default function OrderList() {
           totalPage - 3,
           totalPage - 2,
           totalPage - 1,
-          totalPage
+          totalPage,
         );
       } else {
         pages.push(
@@ -152,7 +152,7 @@ export default function OrderList() {
           currentPage,
           currentPage + 1,
           "...",
-          totalPage
+          totalPage,
         );
       }
     }
@@ -163,9 +163,10 @@ export default function OrderList() {
     try {
       setLoading(true);
       const res = await fetch(
-        `/api/transaction?page=${currentPage}&perPage=${perPage}&search=${searchQuery}`
+        `/api/transaction?page=${currentPage}&perPage=${perPage}&search=${searchQuery}`,
       );
       const data = await res.json();
+      console.log(data);
       setTotalPage(Math.ceil(data.count / Number(perPage)));
       setOrders(data.transaction);
     } catch (error) {
@@ -285,7 +286,7 @@ export default function OrderList() {
                                   month: "short",
                                   day: "numeric",
                                   year: "numeric",
-                                }
+                                },
                               )}
                             </span>
                             <span className="text-xs text-slate-400">
@@ -295,7 +296,7 @@ export default function OrderList() {
                                   hour: "numeric",
                                   minute: "2-digit",
                                   hour12: true,
-                                }
+                                },
                               )}
                             </span>
                           </div>

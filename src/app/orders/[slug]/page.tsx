@@ -2,7 +2,7 @@ import ClientHeader from "@/components/client/client-header";
 import Link from "next/link";
 import OrderDetail from "@/components/order/order-detail";
 import { ArrowLeft, Package } from "lucide-react";
-
+import { cookies } from "next/headers";
 export default async function OrderDetailPage({
   params,
 }: {
@@ -10,10 +10,16 @@ export default async function OrderDetailPage({
 }) {
   const { slug } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const cookieStore = await cookies();
+
   const res = await fetch(`${baseUrl}/api/transaction/${slug}`, {
     cache: "no-store",
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
   });
   const data = await res.json();
+  console.log(data);
 
   //   if (loading) {
   //     return (

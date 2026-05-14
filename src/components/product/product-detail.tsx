@@ -252,9 +252,7 @@ const ProductDetail = ({ product, existingReview, session }: DetailProps) => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-        {/* Images */}
         <div>
-          {/* Main Image */}
           <div className="relative bg-linear-to-br from-slate-800 to-slate-900 rounded-xl overflow-hidden mb-4 aspect-video border border-slate-700">
             <img
               src={displayImages[selectedImage]?.url || "/placeholder.svg"}

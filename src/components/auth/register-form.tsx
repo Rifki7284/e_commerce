@@ -67,10 +67,11 @@ export default function RegisterForm({ onSwitchMode }: RegisterFormProps) {
     const data = await res.json();
     setLoading(false);
 
-    if (!res.ok) {
-      setError(data.error || "Registration failed");
-      return;
-    }
+    setError(
+      typeof data.error === "string"
+        ? data.error
+        : data.error?.response || "Registration failed",
+    );
 
     if (data.otpRequired) {
       setOtp(true);
@@ -122,7 +123,7 @@ export default function RegisterForm({ onSwitchMode }: RegisterFormProps) {
 
   const handleOtpKeyDown = (
     index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
+    e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (e.key === "Backspace" && !otpValue[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();

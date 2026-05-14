@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import Navigation from "./navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { useSession } from "next-auth/react";
-
+import { LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
 interface AdminLayoutProps {
   children: ReactNode;
 }
@@ -124,6 +125,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <div className="w-8 h-8 bg-indigo-600 dark:bg-indigo-500 rounded-full flex items-center justify-center">
                   <span className="text-xs font-medium text-white">
                     {session.data?.user?.name?.trim()?.[0]?.toUpperCase()}
+                  </span>
+                </div>
+              </button>
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="group relative flex items-center gap-3 rounded-xl px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-all hover:bg-linear-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-gray-700 dark:hover:to-gray-700 active:scale-[0.98] overflow-hidden"
+              >
+                <div className="relative rounded-xl p-2.5 flex items-center justify-center shadow-sm transition-all bg-gray-100 dark:bg-gray-700 group-hover:bg-linear-to-br group-hover:from-red-500 group-hover:to-orange-600 dark:group-hover:from-red-600 dark:group-hover:to-orange-700 group-hover:shadow-md group-hover:scale-110">
+                  <span className="text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors">
+                    <LogOut className="h-5 w-5" />
                   </span>
                 </div>
               </button>

@@ -81,7 +81,7 @@ export default function Navigation() {
     const updateTime = () => {
       const now = new Date();
       setCurrentTime(
-        now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+        now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
       );
     };
     updateTime();
